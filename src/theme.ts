@@ -55,7 +55,7 @@ export const layout = {
   width: 1080,
   height: 1440,
   fps: 30,
-  voicePlaybackRate: 1.5,
+  voicePlaybackRate: 1.25,
   backgroundVariant: "paper" as "grid" | "paper" | "blueprint",
   topbarHeight: 68,
   // 没 PIP，bottom 可以压得更低，主舞台让给图片

@@ -1,169 +1,178 @@
-import type {ArticleVideoProps} from "./ArticleVideo";
+import type {ArticleScene, ArticleVideoProps} from "./ArticleVideo";
+
+// The narration is the timing source. Each paragraph owns one page and one caption.
+const sourceAudioDuration = 351.006937;
+// Source-audio seconds. Root.tsx converts these to final 1.25x playback seconds.
+const paragraphRanges = [
+  [0.000, 6.014], [6.014, 12.530], [12.530, 35.752], [35.752, 48.449],
+  [48.449, 54.965], [54.965, 65.824], [65.824, 85.538], [85.538, 106.254],
+  [106.254, 116.278], [116.278, 127.973], [127.973, 139.166], [139.166, 155.372],
+  [155.372, 162.723], [162.723, 183.773], [183.773, 186.446], [186.446, 197.473],
+  [197.473, 213.010], [213.010, 236.566], [236.566, 246.757], [246.757, 265.803],
+  [265.803, 283.846], [283.846, 294.538], [294.538, 314.085], [314.085, 328.453],
+  [328.453, 335.804], [335.804, 342.821], [342.821, 351.007],
+] as const;
+const paragraphStarts = paragraphRanges.map(([start]) => start);
+const paragraphEnds = paragraphRanges.map(([, end]) => end);
+
+const pageHeadings = [
+  "先重新激活爆款单品",
+  "贝恩的核心判断",
+  "新品投入很高，成功率却越来越低",
+  "新品的首年渗透率并不乐观",
+  "真正值得重新评估的是明星产品",
+  "明星产品沉淀了品牌资产",
+  "创新不等于不断增加 SKU",
+  "围绕已有资产创新，试错成本更低",
+  "迭代焕新：让熟悉的产品适应新需求",
+  "升级扩容：把产品放进新场景",
+  "孵化培育：寻找下一代明星产品",
+  "案例：把家庭清洁变得更轻松",
+  "案例：重新设计纸巾的空间使用",
+  "案例：把养生饮品变成便携选择",
+  "创新从用户痛点开始",
+  "AI 让创新逻辑进一步提速",
+  "AI 可以提前识别消费信号",
+  "AI 与人的判断形成协同",
+  "协同发生在创新的每一个环节",
+  "消费者变得更理性了",
+  "品牌资产决定持续购买",
+  "市场变化要求更快响应",
+  "更快确认什么需求值得解决",
+  "创新是一种持续经营能力",
+  "明星产品是品牌的基本盘",
+  "回到消费者真实存在的需求",
+  "释放已经拥有的明星产品价值",
+];
+
+const paragraphCaptions = [
+  "不要靠盲目上新填补业绩缺口，而是用创新重新激活爆款单品。",
+  "这是贝恩公司对消费品创新的一条核心判断。",
+  "很多企业把增长停滞归因于产品不够多，于是不断推出新品。",
+  "投入很高，但真正获得首年渗透的新品并不多。",
+  "真正值得重新评估的，可能不是下一个新品，而是明星产品。",
+  "明星产品已经积累了品牌认知、使用习惯和信任。",
+  "把创新理解成不断增加 SKU，带来的可能只是更多复杂度。",
+  "围绕已有资产做创新，试错成本更低，反馈速度也更快。",
+  "第一条路径，是在原有产品上改进配方、口感和使用体验。",
+  "第二条路径，是把成熟单品放进新的场景和渠道。",
+  "第三条路径，是在已有品牌资产上孵化下一代明星产品。",
+  "滴露消毒喷雾，把耗时的家庭清洁变成更轻松的日常动作。",
+  "悬挂式抽纸重新设计了纸巾与生活空间的关系。",
+  "红豆薏米水把传统养生饮品变成了便携的即饮场景。",
+  "这些产品减少了用户痛点，也拓宽了原有产品的使用场景。",
+  "AI 会让这套创新逻辑进一步提速。",
+  "它可以从碎片化消费信号中提前识别用户需求。",
+  "AI 擅长数据洞察，人类擅长创意塑造和价值判断。",
+  "先让 AI 找到信号，再由人判断它是否是真需求。",
+  "消费者不再只看品牌讲了什么，而会判断功能是否兑现。",
+  "流量带来第一次看到，品牌资产带来主动搜索和持续购买。",
+  "企业需要打通供应链、营销和渠道，建立更快的响应能力。",
+  "更快确认什么需求值得解决，什么创新能够被长期使用。",
+  "创新不再是一次发布动作，而是持续经营的能力。",
+  "越是变化快速的市场，越需要先把明星产品这个基本盘经营好。",
+  "消费品创新真正要解决的是消费者当下真实存在的需求。",
+  "已经拥有的明星产品，还有哪些价值没有被释放？",
+];
+
+const toneCaption = (text: string) => [{text, tone: "accent" as const}];
+
+const makeListScene = (index: number): ArticleScene => ({
+  kind: "list",
+  start: paragraphStarts[index],
+  eyebrow: `分幕 ${String(index + 1).padStart(2, "0")}`,
+  heading: pageHeadings[index],
+  items: [
+    {
+      index: String(index + 1).padStart(2, "0"),
+      label: "本段重点",
+      value: paragraphCaptions[index],
+      tone: "accent",
+      appearAt: 0.25,
+    },
+  ],
+});
+
+const makeScene = (index: number): ArticleScene => {
+  const start = paragraphStarts[index];
+  if (index === 0) {
+    return {
+      kind: "cover",
+      start,
+      eyebrow: "消费品创新 · 贝恩观察",
+      titleLines: [[{text: "别再盲目上新，"}], [{text: "先重新激活明星产品", tone: "accent"}]],
+      subtitle: "增长的答案，可能就在已经被消费者选择的产品里。",
+    };
+  }
+  if (index === 2) {
+    return {
+      kind: "stat",
+      start,
+      eyebrow: "新品创新的真实成本",
+      number: "14",
+      unit: "亿美元 / 年",
+      title: [{text: pageHeadings[index]}],
+      metrics: [
+        {label: "研发占销售额", value: "2%—3%", tone: "accent", appearAt: 0.25},
+        {label: "创新资源最高占比", value: "30%", tone: "accent", appearAt: 0.5},
+      ],
+    };
+  }
+  if (index === 4 || index === 11 || index === 12 || index === 13) {
+    return {
+      kind: "article-image",
+      start,
+      eyebrow: pageHeadings[index],
+      imageSrc: index === 4 ? "assets/article-images/star-product/01.png" : "assets/article-images/star-product/02.png",
+      imageAspect: index === 4 ? 2 : 0.499,
+      title: toneCaption(pageHeadings[index]),
+      caption: paragraphCaptions[index],
+      appearAt: 0.1,
+      titleAppearAt: 0.24,
+      captionAppearAt: 0.56,
+    };
+  }
+  if (index === 14 || index === 15 || index === 16 || index === 17) {
+    return {
+      kind: "compare",
+      start,
+      eyebrow: pageHeadings[index],
+      heading: index === 14 ? "从用户痛点开始创新" : "让 AI 和人的判断形成协同",
+      choices: [
+        {code: "AI", title: "数据洞察", subtitle: "捕捉信号·迭代方案", tone: "accent", appearAt: 0.3},
+        {code: "人", title: "价值判断", subtitle: "理解生活·做出选择", tone: "muted", appearAt: 0.65},
+      ],
+    };
+  }
+  if (index === 26) {
+    return {
+      kind: "outro",
+      start,
+      eyebrow: "文章结论",
+      title: "别急着寻找下一个爆款",
+      subtitle: paragraphCaptions[index],
+    };
+  }
+  return makeListScene(index);
+};
 
 export const demoProject: ArticleVideoProps = {
-  title: "一个婚恋App，最不应该关注什么指标？",
+  title: "别再盲目上新：重新激活明星产品",
   fps: 30,
-  durationSeconds: 64.0,
+  durationSeconds: sourceAudioDuration,
   voiceAudio: "assets/audio/voice.mp3",
   chapters: [
-    {label: "开篇", start: 0},
-    {label: "Context", start: 12},
-    {label: "1v1", start: 26},
-    {label: "关系", start: 42},
-    {label: "结论", start: 56},
+    {label: "开篇", start: paragraphStarts[0]},
+    {label: "明星产品", start: paragraphStarts[4]},
+    {label: "焕新路径", start: paragraphStarts[8]},
+    {label: "AI机会", start: paragraphStarts[14]},
+    {label: "结论", start: paragraphStarts[22]},
   ],
-  scenes: [
-    {
-      kind: "cover",
-      start: 0,
-      eyebrow: "AI 新榜 · 良配AI",
-      titleLines: [
-        [{text: "一个婚恋App，"}],
-        [{text: "最不该关注什么指标？", tone: "accent"}],
-      ],
-      subtitle: "答案可能是：用户留存和活跃度。",
-    },
-    {
-      kind: "article-image",
-      start: 7,
-      eyebrow: "反常识设计",
-      imageSrc: "assets/article-images/img-02.jpg",
-      imageAspect: 1.4136,
-      title: [{text: "找到对象后，"}, {text: "为什么还要追求活跃？", tone: "accent"}],
-      caption: "婚恋产品不该靠用户迟迟找不到对象赚钱",
-      source: "图源：公众号原文",
-      appearAt: 0.1,
-      titleAppearAt: 0.28,
-      captionAppearAt: 0.62,
-    },
-    {
-      kind: "list",
-      start: 15,
-      eyebrow: "良配AI的反常识设计",
-      heading: "先认真，再匹配",
-      items: [
-        {index: "01", label: "聊天关系", value: "一次只匹配1人", tone: "accent", appearAt: 0.35},
-        {index: "02", label: "注册门槛", value: "实名·未婚·真人", tone: "accent", appearAt: 0.8},
-        {index: "03", label: "会员计划", value: "三年不婚退2000元", tone: "accent", appearAt: 1.25},
-      ],
-    },
-    {
-      kind: "stat",
-      start: 26,
-      eyebrow: "AI做婚恋，关键是 Context",
-      number: "1500",
-      unit: "字上下文",
-      title: [{text: "AI红娘先帮用户把自己说清楚"}],
-      metrics: [
-        {label: "平均对话", value: "34轮", tone: "accent", appearAt: 0.58},
-        {label: "公开资料", value: "470字", tone: "accent", appearAt: 0.9},
-        {label: "传统产品平均", value: "110字", tone: "muted", appearAt: 1.22},
-      ],
-    },
-    {
-      kind: "article-image",
-      start: 35,
-      eyebrow: "从大海捞针到池塘筛选",
-      imageSrc: "assets/article-images/img-04.jpg",
-      imageAspect: 1.1169,
-      title: [{text: "推荐系统要理解的，"}, {text: "不只是资料", tone: "accent"}],
-      caption: "过去另一边是网页，现在另一边是一个人",
-      source: "图源：公众号原文",
-      appearAt: 0.1,
-      titleAppearAt: 0.28,
-      captionAppearAt: 0.64,
-    },
-    {
-      kind: "compare",
-      start: 42,
-      eyebrow: "为什么坚持 1v1？",
-      heading: "少一点选择，可能更接近关系",
-      choices: [
-        {code: "过去", title: "广撒网", subtitle: "候选越多越高效？", tone: "muted", appearAt: 0.36},
-        {code: "现在", title: "1v1匹配", subtitle: "把大海变成池塘", tone: "accent", appearAt: 0.86},
-      ],
-    },
-    {
-      kind: "stat",
-      start: 50,
-      eyebrow: "保结婚会员计划",
-      number: "2000",
-      unit: "元",
-      title: [{text: "三年后仍未结婚，"}, {text: "全额退款", tone: "accent"}],
-      metrics: [
-        {label: "产品价值判断", value: "不靠拖延赚钱", tone: "accent", appearAt: 0.62},
-        {label: "长期方向", value: "从找人到经营关系", tone: "accent", appearAt: 1.08},
-      ],
-    },
-    {
-      kind: "outro",
-      start: 58,
-      eyebrow: "文章结论",
-      title: "先理解一个人，再找到更对的人",
-      subtitle: "婚恋或许只是 AI 重新做“人找人”的第一个场景。",
-    },
-  ],
-  captions: [
-    {
-      start: 0.45,
-      end: 5.8,
-      parts: [
-        {text: "一个婚恋App，最不应该关注什么指标？答案可能是"},
-        {text: "留存和活跃度", tone: "accent"},
-        {text: "。"},
-      ],
-    },
-    {
-      start: 7.5,
-      end: 12.8,
-      parts: [
-        {text: "良配AI不追求让用户一直留在App里，而是用"},
-        {text: "反常识设计", tone: "accent"},
-        {text: "逼用户认真开始一段关系。"},
-      ],
-    },
-    {
-      start: 15.4,
-      end: 23.8,
-      parts: [
-        {text: "一次只能匹配一个人，注册前完成实名、未婚和真人认证，三年不结婚还"},
-        {text: "退回2000元", tone: "accent"},
-        {text: "会员费。"},
-      ],
-    },
-    {
-      start: 26.6,
-      end: 33.8,
-      parts: [
-        {text: "AI做婚恋，真正要解决的不是认识更多人，而是理解一个人的"},
-        {text: "Context", tone: "accent"},
-        {text: "。"},
-      ],
-    },
-    {
-      start: 35.5,
-      end: 40.8,
-      parts: [{text: "AI红娘通过34轮对话，沉淀大约1500字上下文，让用户先把自己说清楚。"}],
-    },
-    {
-      start: 42.5,
-      end: 48.6,
-      parts: [{text: "当AI已经把大海变成池塘，再用广撒网的心态沟通，反而会错过可能合适的人。"}],
-    },
-    {
-      start: 50.5,
-      end: 56.6,
-      parts: [
-        {text: "AI不只是帮你找到对象，也可能继续做一个长期存在于关系中的"},
-        {text: "AI军师", tone: "accent"},
-        {text: "。"},
-      ],
-    },
-    {
-      start: 58.5,
-      end: 63.5,
-      parts: [{text: "过去互联网让人找到更多人，大模型想验证的，是先理解一个人，再找到一个更对的人。"}],
-    },
-  ],
+  scenes: paragraphStarts.map((_, index) => makeScene(index)),
+  captions: paragraphCaptions.map((text, index) => ({
+    start: paragraphStarts[index],
+    end: paragraphEnds[index],
+    parts: [{text}],
+  })),
   sfxCues: [],
 };
