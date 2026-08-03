@@ -144,9 +144,9 @@ const premiumBackgroundStyle: CSSProperties = {
 };
 
 const paperBackgroundStyle: CSSProperties = {
-  backgroundColor: "#f5f7f3",
+  backgroundColor: "#f7f7f7",
   backgroundImage:
-    "repeating-linear-gradient(0deg, transparent 0, transparent 71px, rgba(47,111,255,0.045) 72px), linear-gradient(90deg, rgba(255,255,255,0.72), rgba(239,244,239,0.62))",
+    "repeating-linear-gradient(0deg, transparent 0, transparent 71px, rgba(142,175,212,0.08) 72px), linear-gradient(180deg, #f7f7f7 0%, #f0f4f9 100%)",
   pointerEvents: "none",
   overflow: "hidden",
 };
