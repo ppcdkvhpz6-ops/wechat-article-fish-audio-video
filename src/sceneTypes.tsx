@@ -1037,7 +1037,7 @@ const captionBandStyle: CSSProperties = {
   position: "absolute",
   inset: 0,
   backgroundColor: colors.white,
-  borderTop: `2px solid ${colors.ink}`,
+  borderTop: "2px solid #4a4f55",
 };
 const captionStyle: CSSProperties = {
   position: "absolute",
