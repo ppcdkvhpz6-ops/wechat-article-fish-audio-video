@@ -630,7 +630,7 @@ export const TopBar = ({
                 <span
                   style={{
                     ...portraitChapterLabelStyle,
-                    color: reached ? colors.ink : colors.topbarMuted,
+                    color: reached ? colors.white : colors.topbarMuted,
                     fontWeight: active ? 700 : reached ? 600 : 500,
                   }}
                 >
@@ -649,7 +649,7 @@ export const TopBar = ({
                 <span
                   style={{
                     ...chapterLabelStyle,
-                    color: reached ? colors.ink : colors.topbarMuted,
+                    color: reached ? colors.white : colors.topbarMuted,
                     fontWeight: reached ? 600 : 500,
                   }}
                 >
@@ -1036,7 +1036,7 @@ const portraitCaptionLayerStyle: CSSProperties = {
 const captionBandStyle: CSSProperties = {
   position: "absolute",
   inset: 0,
-  backgroundColor: "rgba(249,250,246,0.94)",
+  backgroundColor: colors.white,
   borderTop: `2px solid ${colors.ink}`,
 };
 const captionStyle: CSSProperties = {
@@ -1069,7 +1069,7 @@ const topbarStyle: CSSProperties = {
   right: 0,
   height: layout.topbarHeight,
   zIndex: 120,
-  backgroundColor: colors.topbar,
+  backgroundColor: colors.topbarTrack,
   overflow: "hidden",
 };
 const portraitTopbarStyle: CSSProperties = {
@@ -1080,7 +1080,7 @@ const navFillStyle: CSSProperties = {
   top: 7,
   bottom: 7,
   left: 0,
-  backgroundColor: colors.signal,
+  backgroundColor: colors.ink,
   borderRadius: "0 14px 14px 0",
 };
 const chapterRowStyle: CSSProperties = {
