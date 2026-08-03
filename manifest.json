@@ -1,0 +1,30 @@
+{
+  "title": "一个婚恋App，最不应该关注什么指标？",
+  "duration": 18.0,
+  "article_url": "https://mp.weixin.qq.com/s/CkO_OFsf9GU5UhPri7loAQ",
+  "paths": {
+    "audio": "",
+    "seeded_fonts": [
+      "NotoSansSC-300.ttf",
+      "NotoSansSC-400.ttf",
+      "NotoSansSC-500.ttf",
+      "NotoSansSC-700.ttf",
+      "NotoSansSC-900.ttf",
+      "SOURCES.md",
+      "SpaceGrotesk-400.ttf",
+      "SpaceGrotesk-500.ttf",
+      "SpaceGrotesk-600.ttf",
+      "SpaceGrotesk-700.ttf"
+    ],
+    "seeded_sfx": [
+      "SOURCES.md",
+      "sfx-deep-impact.mp3",
+      "sfx-hard-pop-click.mp3",
+      "sfx-long-pop.mp3",
+      "sfx-movie-trailer-epic-impact.mp3",
+      "sfx-positive-interface-beep.mp3",
+      "sfx-small-sweep-transition.mp3",
+      "sfx-whoosh-fast-transition.mp3"
+    ]
+  }
+}

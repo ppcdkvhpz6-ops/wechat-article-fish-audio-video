@@ -1,0 +1,146 @@
+[
+  {
+    "index": 1,
+    "filename": "img-01.jpg",
+    "staticFile": "assets/article-images/img-01.jpg",
+    "width": 1080,
+    "height": 607,
+    "imageAspect": 1.7792,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_2d1abb6f.png"
+  },
+  {
+    "index": 2,
+    "filename": "img-02.jpg",
+    "staticFile": "assets/article-images/img-02.jpg",
+    "width": 1080,
+    "height": 764,
+    "imageAspect": 1.4136,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_dac968ce.png"
+  },
+  {
+    "index": 3,
+    "filename": "img-03.jpg",
+    "staticFile": "assets/article-images/img-03.jpg",
+    "width": 1057,
+    "height": 121,
+    "imageAspect": 8.7355,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_66a108c9.png"
+  },
+  {
+    "index": 4,
+    "filename": "img-04.jpg",
+    "staticFile": "assets/article-images/img-04.jpg",
+    "width": 1080,
+    "height": 967,
+    "imageAspect": 1.1169,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_b2f11e53.png"
+  },
+  {
+    "index": 5,
+    "filename": "img-05.jpg",
+    "staticFile": "assets/article-images/img-05.jpg",
+    "width": 640,
+    "height": 1136,
+    "imageAspect": 0.5634,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_95a88e43.png"
+  },
+  {
+    "index": 6,
+    "filename": "img-06.jpg",
+    "staticFile": "assets/article-images/img-06.jpg",
+    "width": 1057,
+    "height": 121,
+    "imageAspect": 8.7355,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_2fdd7c2b.png"
+  },
+  {
+    "index": 7,
+    "filename": "img-07.jpg",
+    "staticFile": "assets/article-images/img-07.jpg",
+    "width": 1080,
+    "height": 810,
+    "imageAspect": 1.3333,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_b28e243d.png"
+  },
+  {
+    "index": 8,
+    "filename": "img-08.jpg",
+    "staticFile": "assets/article-images/img-08.jpg",
+    "width": 1080,
+    "height": 2095,
+    "imageAspect": 0.5155,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_e3c62426.png"
+  },
+  {
+    "index": 9,
+    "filename": "img-09.jpg",
+    "staticFile": "assets/article-images/img-09.jpg",
+    "width": 1057,
+    "height": 121,
+    "imageAspect": 8.7355,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_9af5fe1e.png"
+  },
+  {
+    "index": 10,
+    "filename": "img-10.jpg",
+    "staticFile": "assets/article-images/img-10.jpg",
+    "width": 1057,
+    "height": 121,
+    "imageAspect": 8.7355,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_a75f0481.png"
+  },
+  {
+    "index": 11,
+    "filename": "img-11.jpg",
+    "staticFile": "assets/article-images/img-11.jpg",
+    "width": 1006,
+    "height": 1136,
+    "imageAspect": 0.8856,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_1aaa03b7.png"
+  },
+  {
+    "index": 12,
+    "filename": "img-12.jpg",
+    "staticFile": "assets/article-images/img-12.jpg",
+    "width": 1080,
+    "height": 720,
+    "imageAspect": 1.5,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_0dde89e5.png"
+  },
+  {
+    "index": 13,
+    "filename": "img-13.jpg",
+    "staticFile": "assets/article-images/img-13.jpg",
+    "width": 750,
+    "height": 200,
+    "imageAspect": 3.75,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_13b9fde4.png"
+  },
+  {
+    "index": 14,
+    "filename": "img-14.jpg",
+    "staticFile": "assets/article-images/img-14.jpg",
+    "width": 750,
+    "height": 200,
+    "imageAspect": 3.75,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_1084130b.png"
+  },
+  {
+    "index": 15,
+    "filename": "img-15.jpg",
+    "staticFile": "assets/article-images/img-15.jpg",
+    "width": 1080,
+    "height": 357,
+    "imageAspect": 3.0252,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_d4fe8fff.png"
+  },
+  {
+    "index": 16,
+    "filename": "img-16.jpg",
+    "staticFile": "assets/article-images/img-16.jpg",
+    "width": 1080,
+    "height": 357,
+    "imageAspect": 3.0252,
+    "sourceUrl": "https://ideaflow-article-to-markdown.hf.space/images/pic_67b0fa0f.png"
+  }
+]

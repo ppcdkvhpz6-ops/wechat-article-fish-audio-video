@@ -1,0 +1,36 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Remotion
+out/
+.cache/
+remotion.config.*.tmp
+
+# 编辑器
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 环境
+.env
+.env.local
+.env.*.local
+
+# 渲染输出（保留目录占位文件）
+renders/*
+!renders/.gitkeep
+
+# 中间产物（保留可复现项目所需的源文章、脚本与目录结构）
+work/*
+!work/source/
+!work/source/**
+!work/lessons/
+!work/lessons/**
+!work/audio/
+!work/audio/.gitkeep
+!work/captions/
+!work/captions/.gitkeep
