@@ -1,6 +1,32 @@
 import {Composition, Folder} from "remotion";
 import {demoProject} from "./demoData";
 import {ArticleVideo, type ArticleVideoProps} from "./ArticleVideo";
+import {layout} from "./theme";
+
+const scaleSeconds = (seconds: number) => seconds / layout.voicePlaybackRate;
+
+const scaledProject: ArticleVideoProps = {
+  ...demoProject,
+  durationSeconds: scaleSeconds(demoProject.durationSeconds),
+  chapters: demoProject.chapters.map((chapter) => ({
+    ...chapter,
+    start: scaleSeconds(chapter.start),
+  })),
+  scenes: demoProject.scenes.map((scene) => ({
+    ...scene,
+    start: scaleSeconds(scene.start),
+  })),
+  captions: demoProject.captions.map((caption) => ({
+    ...caption,
+    start: scaleSeconds(caption.start),
+    end: scaleSeconds(caption.end),
+  })),
+  sfxCues: demoProject.sfxCues?.map((cue) => ({
+    ...cue,
+    start: scaleSeconds(cue.start),
+    duration: scaleSeconds(cue.duration),
+  })),
+};
 
 export const RemotionRoot = () => {
   return (
@@ -8,11 +34,11 @@ export const RemotionRoot = () => {
       <Composition
         id="ArticleVideo"
         component={ArticleVideo}
-        durationInFrames={Math.round(demoProject.durationSeconds * demoProject.fps)}
+        durationInFrames={Math.round(scaledProject.durationSeconds * scaledProject.fps)}
         fps={demoProject.fps}
-        width={1920}
-        height={1080}
-        defaultProps={demoProject satisfies ArticleVideoProps}
+        width={layout.width}
+        height={layout.height}
+        defaultProps={scaledProject satisfies ArticleVideoProps}
       />
     </Folder>
   );

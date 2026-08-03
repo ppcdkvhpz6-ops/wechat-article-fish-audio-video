@@ -15,7 +15,7 @@ from urllib.request import Request, urlopen
 
 API_URL = "https://api.fish.audio/v1/tts"
 DEFAULT_MODEL = "s2.1-pro-free"
-DEFAULT_VOICE_ID = "7f92f8afb8ec43bf81429cc1c9199cb1"
+DEFAULT_VOICE_ID = "c7cbda1c101c4ce8906c046f01eca1a2"
 
 
 def build_request(text: str, api_key: str, voice_id: str) -> tuple[dict[str, str], dict[str, str]]:

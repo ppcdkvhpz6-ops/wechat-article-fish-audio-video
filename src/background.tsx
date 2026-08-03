@@ -1,6 +1,6 @@
 import type {CSSProperties} from "react";
 import {AbsoluteFill, useCurrentFrame, useVideoConfig} from "remotion";
-import {colors} from "./theme";
+import {colors, layout} from "./theme";
 import {clamp} from "./shared";
 
 // === Premium Grid Background =====================================
@@ -8,9 +8,10 @@ import {clamp} from "./shared";
 // 暖白画布 + 上下镜像透视格子 + 中心 veil + grain
 // 见 talking-head-remotion/references/visual-guide.md
 
-const canvasHeight = 1080;
-const nearY = -78;
-const farY = 342;
+const canvasWidth = layout.width;
+const canvasHeight = layout.height;
+const nearY = -100;
+const farY = 500;
 const planeHeight = farY - nearY;
 const rowStep = 62;
 
@@ -19,6 +20,23 @@ export const PremiumGridBackground = () => {
   const {fps} = useVideoConfig();
   const seconds = frame / fps;
   const glow = 0.5 + Math.sin(seconds * 0.48) * 0.5;
+
+  if (layout.backgroundVariant === "paper") {
+    return (
+      <AbsoluteFill style={paperBackgroundStyle}>
+        <AbsoluteFill style={grainStyle(seconds)} />
+      </AbsoluteFill>
+    );
+  }
+
+  if (layout.backgroundVariant === "blueprint") {
+    return (
+      <AbsoluteFill style={blueprintBackgroundStyle}>
+        <PerspectiveGrid seconds={seconds} glow={glow} />
+        <AbsoluteFill style={blueprintVeilStyle} />
+      </AbsoluteFill>
+    );
+  }
 
   return (
     <AbsoluteFill style={premiumBackgroundStyle}>
@@ -41,14 +59,14 @@ const PerspectiveGrid = ({seconds, glow}: {seconds: number; glow: number}) => {
   const verticals = Array.from({length: 23}, (_, index) => index - 11);
   const project = (y: number) => {
     const t = clamp((y - nearY) / planeHeight, 0, 1);
-    return {left: -230 + t * 420, right: 2150 - t * 420};
+    return {left: -170 + t * 360, right: 1610 - t * 360};
   };
   const mirrorY = (y: number) => canvasHeight - y;
-  const nearX = (index: number) => 960 + index * 154;
-  const farX = (index: number) => 960 + index * 76;
+  const nearX = (index: number) => canvasWidth / 2 + index * 116;
+  const farX = (index: number) => canvasWidth / 2 + index * 58;
 
   return (
-    <svg viewBox="0 0 1920 1080" style={perspectiveGridSvgStyle}>
+    <svg viewBox={`0 0 ${canvasWidth} ${canvasHeight}`} style={perspectiveGridSvgStyle}>
       <defs>
         <linearGradient id="grid-stroke" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="rgba(44,58,78,0.16)" />
@@ -123,6 +141,25 @@ const premiumBackgroundStyle: CSSProperties = {
   backgroundColor: colors.canvas,
   pointerEvents: "none",
   overflow: "hidden",
+};
+
+const paperBackgroundStyle: CSSProperties = {
+  backgroundColor: "#f5f7f3",
+  backgroundImage:
+    "repeating-linear-gradient(0deg, transparent 0, transparent 71px, rgba(47,111,255,0.045) 72px), linear-gradient(90deg, rgba(255,255,255,0.72), rgba(239,244,239,0.62))",
+  pointerEvents: "none",
+  overflow: "hidden",
+};
+
+const blueprintBackgroundStyle: CSSProperties = {
+  backgroundColor: "#edf3f6",
+  pointerEvents: "none",
+  overflow: "hidden",
+};
+
+const blueprintVeilStyle: CSSProperties = {
+  background:
+    "linear-gradient(180deg, rgba(237,243,246,0.04) 0%, rgba(237,243,246,0.72) 48%, rgba(237,243,246,0.12) 100%)",
 };
 
 const ambientWashStyle = (seconds: number): CSSProperties => ({

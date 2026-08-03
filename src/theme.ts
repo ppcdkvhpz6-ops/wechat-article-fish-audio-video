@@ -1,7 +1,9 @@
 import {staticFile} from "remotion";
 
 const fontFiles = [
+  {family: "Noto Sans SC", file: "assets/fonts/NotoSansSC-300.ttf", weight: "300"},
   {family: "Noto Sans SC", file: "assets/fonts/NotoSansSC-400.ttf", weight: "400"},
+  {family: "Noto Sans SC", file: "assets/fonts/NotoSansSC-500.ttf", weight: "500"},
   {family: "Noto Sans SC", file: "assets/fonts/NotoSansSC-700.ttf", weight: "700"},
   {family: "Noto Sans SC", file: "assets/fonts/NotoSansSC-900.ttf", weight: "900"},
   {family: "Space Grotesk", file: "assets/fonts/SpaceGrotesk-400.ttf", weight: "400"},
@@ -33,6 +35,7 @@ export const colors = {
   line: "rgba(28,38,54,0.10)",
   lineStrong: "rgba(28,38,54,0.14)",
   accent: "#2f6fff",
+  signal: "#c7f36a",
   topbar: "#202024",
   topbarMuted: "rgba(255,255,255,0.62)",
   topbarSeparator: "#8a8a86",
@@ -49,9 +52,11 @@ export const fonts = {
 };
 
 export const layout = {
-  width: 1920,
-  height: 1080,
+  width: 1080,
+  height: 1440,
   fps: 30,
+  voicePlaybackRate: 1.5,
+  backgroundVariant: "paper" as "grid" | "paper" | "blueprint",
   topbarHeight: 68,
   // 没 PIP，bottom 可以压得更低，主舞台让给图片
   safeTop: 196,

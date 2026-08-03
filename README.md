@@ -8,7 +8,9 @@
 - 顶部黑色章节进度条（白色填充）
 - 底部无底色黑字字幕，关键词蓝色 `#2f6fff` 强调
 - **完全不要 PIP**（与 talking-head-remotion 不同）—— 主舞台给足空间给公众号原文图
-- 默认画幅 1920×1080 @ 30fps 横屏
+- 默认画幅 1080×1440 @ 30fps（3:4，适合小红书等手机端发布）
+- 配音播放速度默认 1.5 倍，视频时间轴会同步压缩，避免字幕与声音错位
+- 背景可选 `grid`（透视网格）、`paper`（纸张纹理）和 `blueprint`（蓝图网格）
 
 ## 场景类型
 
@@ -62,6 +64,8 @@ npm run still
 npm run render:preview   # 先出低清 proof
 npm run render           # 正式版
 ```
+
+当前默认输出为 3:4，配音播放速度为 1.5 倍。需要调整时，修改 `src/theme.ts` 中的 `layout.width`、`layout.height`、`layout.voicePlaybackRate` 和 `layout.backgroundVariant`。
 
 ## 不能妥协的硬规则
 
@@ -120,7 +124,7 @@ npm run render          # 正式 1080p
 
 ```bash
 export FISH_API_KEY="你的 Fish Audio API Key"
-export FISH_VOICE_ID="7f92f8afb8ec43bf81429cc1c9199cb1"
+export FISH_VOICE_ID="c7cbda1c101c4ce8906c046f01eca1a2"
 python3 scripts/fish_tts.py \
   --text-file work/source/voice-script.txt \
   --output public/assets/audio/voice.mp3

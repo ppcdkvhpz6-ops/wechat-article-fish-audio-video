@@ -1,6 +1,6 @@
 import type {CSSProperties} from "react";
 import {AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig} from "remotion";
-import {colors, fonts} from "./theme";
+import {colors, fonts, layout} from "./theme";
 import {frameFromSeconds, progress} from "./shared";
 import {PremiumGridBackground} from "./background";
 import {
@@ -30,7 +30,13 @@ export const ArticleVideo = ({
     <AbsoluteFill style={stageStyle}>
       <PremiumGridBackground />
       {/* Fish Audio's free API output is intentionally conservative in level. */}
-      {voiceAudio ? <Audio src={staticFile(voiceAudio)} volume={2.8} /> : null}
+      {voiceAudio ? (
+        <Audio
+          src={staticFile(voiceAudio)}
+          volume={2.8}
+          playbackRate={layout.voicePlaybackRate}
+        />
+      ) : null}
       {sfxCues.map((cue) => (
         <Sequence
           key={cue.id}

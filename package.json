@@ -7,7 +7,7 @@
     "test": "node --test scripts/demo_data.test.mjs",
     "studio": "remotion studio src/index.ts",
     "typecheck": "tsc --noEmit",
-    "tts:fish": "python3 scripts/fish_tts.py --text \"这是良配 AI 的一段示例文章配音。\"",
+    "tts:fish": "python3 scripts/fish_tts.py --text-file work/source/voice-script.txt --output public/assets/audio/voice.mp3",
     "still": "remotion still src/index.ts ArticleVideo renders/frame-030.png --frame=30 --scale=0.25",
     "render:preview": "remotion render src/index.ts ArticleVideo renders/preview-low.mp4 --scale=0.5 --crf=28 --concurrency=2 --overwrite",
     "render": "remotion render src/index.ts ArticleVideo renders/demo.mp4"

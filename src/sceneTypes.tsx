@@ -217,18 +217,29 @@ const scaleYStyle = (
 
 const CoverSceneView = ({scene}: {scene: CoverScene}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
+  const portrait = height > width;
   return (
     <div style={{...sceneContentStyle, justifyContent: "center"}}>
       <Eyebrow style={enterStyle(frame, fps, 0.14, 0.42, 18)}>{scene.eyebrow}</Eyebrow>
-      <h1 style={{...coverTitleStyle, ...enterStyle(frame, fps, 0.25, 0.56, 42)}}>
+      <h1
+        style={{
+          ...(portrait ? portraitCoverTitleStyle : coverTitleStyle),
+          ...enterStyle(frame, fps, 0.25, 0.56, 42),
+        }}
+      >
         {scene.titleLines.map((line, index) => (
           <span key={index} style={{display: "block"}}>
             <RichText parts={line} strong />
           </span>
         ))}
       </h1>
-      <div style={{...subtitleStyle, ...enterStyle(frame, fps, 0.52, 0.44, 24)}}>
+      <div
+        style={{
+          ...(portrait ? portraitSubtitleStyle : subtitleStyle),
+          ...enterStyle(frame, fps, 0.52, 0.44, 24),
+        }}
+      >
         {scene.subtitle}
       </div>
     </div>
@@ -239,15 +250,21 @@ const CoverSceneView = ({scene}: {scene: CoverScene}) => {
 
 const ListSceneView = ({scene}: {scene: ListScene}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
+  const portrait = height > width;
   return (
-    <div style={{...sceneContentStyle, ...splitLayoutStyle}}>
-      <div style={sectionTitleRailStyle}>
+    <div style={{...sceneContentStyle, ...(portrait ? portraitListLayoutStyle : splitLayoutStyle)}}>
+      <div style={portrait ? portraitSectionTitleRailStyle : sectionTitleRailStyle}>
         <span style={{...smallRuleStyle, ...scaleXStyle(frame, fps, 0.1, 0.28)}} />
         <div style={{...sectionLabelStyle, ...enterStyle(frame, fps, 0.16, 0.34, 16)}}>
           {scene.eyebrow}
         </div>
-        <div style={{...sectionHeadingStyle, ...enterStyle(frame, fps, 0.24, 0.44, 28)}}>
+        <div
+          style={{
+            ...(portrait ? portraitSectionHeadingStyle : sectionHeadingStyle),
+            ...enterStyle(frame, fps, 0.24, 0.44, 28),
+          }}
+        >
           {scene.heading}
         </div>
       </div>
@@ -262,7 +279,14 @@ const ListSceneView = ({scene}: {scene: ListScene}) => {
           >
             <span style={rowIndexStyle}>{item.index}</span>
             <span style={rowLabelStyle}>{item.label}</span>
-            <span style={{...rowValueStyle, color: toneColor(item.tone)}}>{item.value}</span>
+            <span
+              style={{
+                ...(portrait ? portraitRowValueStyle : rowValueStyle),
+                color: toneColor(item.tone),
+              }}
+            >
+              {item.value}
+            </span>
           </div>
         ))}
       </div>
@@ -274,21 +298,22 @@ const ListSceneView = ({scene}: {scene: ListScene}) => {
 
 const StatSceneView = ({scene}: {scene: StatScene}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
+  const portrait = height > width;
   return (
-    <div style={{...sceneContentStyle, ...statLayoutStyle}}>
-      <div style={bigStatStyle}>
+    <div style={{...sceneContentStyle, ...(portrait ? portraitStatLayoutStyle : statLayoutStyle)}}>
+      <div style={portrait ? portraitBigStatStyle : bigStatStyle}>
         <div style={{...sectionLabelStyle, ...enterStyle(frame, fps, 0.08, 0.34, 0)}}>
           {scene.eyebrow}
         </div>
         <div style={{...statNumberWrapStyle, ...enterStyle(frame, fps, 0.16, 0.48, 34)}}>
-          <span style={statNumberStyle}>{scene.number}</span>
-          <span style={statUnitStyle}>{scene.unit}</span>
+          <span style={portrait ? portraitStatNumberStyle : statNumberStyle}>{scene.number}</span>
+          <span style={portrait ? portraitStatUnitStyle : statUnitStyle}>{scene.unit}</span>
         </div>
         <span style={{...statRuleStyle, ...scaleXStyle(frame, fps, 0.48, 0.32)}} />
       </div>
-      <div style={{...statDetailStyle, ...enterStyle(frame, fps, 0.28, 0.48, 0)}}>
-        <div style={detailTitleStyle}>
+      <div style={{...(portrait ? portraitStatDetailStyle : statDetailStyle), ...enterStyle(frame, fps, 0.28, 0.48, 0)}}>
+        <div style={portrait ? portraitDetailTitleStyle : detailTitleStyle}>
           <RichText parts={scene.title} strong preserveLineBreaks />
         </div>
         <div style={miniStatsStyle}>
@@ -322,7 +347,8 @@ const StatSceneView = ({scene}: {scene: StatScene}) => {
 
 const CompareSceneView = ({scene}: {scene: CompareScene}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
+  const portrait = height > width;
   return (
     <div style={{...sceneContentStyle, justifyContent: "flex-start"}}>
       <span style={{...smallRuleStyle, ...scaleXStyle(frame, fps, 0.1, 0.28)}} />
@@ -332,18 +358,18 @@ const CompareSceneView = ({scene}: {scene: CompareScene}) => {
       <div
         style={{
           ...sectionHeadingStyle,
-          fontSize: 88,
+          fontSize: portrait ? 66 : 88,
           ...enterStyle(frame, fps, 0.24, 0.44, 28),
         }}
       >
         {scene.heading}
       </div>
-      <div style={compareGridStyle}>
+      <div style={compareGridStyle(portrait)}>
         {scene.choices.map((choice, index) => (
           <div
             key={choice.code}
             style={{
-              ...choiceStyle(index),
+              ...choiceStyle(index, portrait),
               ...enterStyle(
                 frame,
                 fps,
@@ -356,11 +382,22 @@ const CompareSceneView = ({scene}: {scene: CompareScene}) => {
             <span style={{...choiceCodeStyle, color: toneColor(choice.tone)}}>
               {choice.code}
             </span>
-            <div style={choiceTitleStyle}>{choice.title}</div>
-            <div style={choiceSubtitleStyle}>{choice.subtitle}</div>
+              <div style={{...choiceTitleStyle, ...(portrait ? portraitChoiceTitleStyle : {})}}>
+                {choice.title}
+              </div>
+              <div style={{...choiceSubtitleStyle, ...(portrait ? portraitChoiceSubtitleStyle : {})}}>
+                {choice.subtitle}
+              </div>
           </div>
         ))}
-        <div style={{...dividerStyle, ...scaleYStyle(frame, fps, 0.34, 0.36)}} />
+        <div
+          style={{
+            ...(portrait ? portraitDividerStyle : dividerStyle),
+            ...(portrait
+              ? scaleXStyle(frame, fps, 0.34, 0.36)
+              : scaleYStyle(frame, fps, 0.34, 0.36)),
+          }}
+        />
       </div>
     </div>
   );
@@ -370,7 +407,8 @@ const CompareSceneView = ({scene}: {scene: CompareScene}) => {
 
 const OutroSceneView = ({scene}: {scene: OutroScene}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
+  const portrait = height > width;
   return (
     <div
       style={{
@@ -384,10 +422,22 @@ const OutroSceneView = ({scene}: {scene: OutroScene}) => {
       <div style={{...sectionLabelStyle, ...enterStyle(frame, fps, 0.16, 0.34, 16)}}>
         {scene.eyebrow}
       </div>
-      <div style={{...outroTitleStyle, ...enterStyle(frame, fps, 0.24, 0.5, 34)}}>
+      <div
+        style={{
+          ...outroTitleStyle,
+          ...(portrait ? portraitOutroTitleStyle : {}),
+          ...enterStyle(frame, fps, 0.24, 0.5, 34),
+        }}
+      >
         {scene.title}
       </div>
-      <div style={{...outroSubtitleStyle, ...enterStyle(frame, fps, 0.48, 0.4, 22)}}>
+      <div
+        style={{
+          ...outroSubtitleStyle,
+          ...(portrait ? portraitOutroSubtitleStyle : {}),
+          ...enterStyle(frame, fps, 0.48, 0.4, 22),
+        }}
+      >
         {scene.subtitle}
       </div>
     </div>
@@ -398,7 +448,8 @@ const OutroSceneView = ({scene}: {scene: OutroScene}) => {
 
 const ArticleImageSceneView = ({scene}: {scene: ArticleImageScene}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
+  const portrait = height > width;
 
   // 铁律：object-fit: contain，永不 cover
   // 宽高比决定 max-width 还是 max-height 优先
@@ -420,7 +471,7 @@ const ArticleImageSceneView = ({scene}: {scene: ArticleImageScene}) => {
         </Eyebrow>
         <h2
           style={{
-            ...articleImageTitleStyle,
+            ...(portrait ? portraitArticleImageTitleStyle : articleImageTitleStyle),
             ...enterStyle(frame, fps, scene.titleAppearAt ?? 0.24, 0.5, 24),
           }}
         >
@@ -471,13 +522,20 @@ export const SceneRenderer = ({
   isLast: boolean;
 }) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
+  const portrait = height > width;
   const enter = progress(frame, 0, 0.42 * fps);
   const exit = isLast ? 0 : progress(frame, durationInFrames - 0.42 * fps, 0.42 * fps);
   const opacity = clamp(enter - exit, 0, 1);
 
   return (
-    <AbsoluteFill style={{...sceneShellStyle, opacity}}>
+    <AbsoluteFill
+      style={{
+        ...sceneShellStyle,
+        ...(portrait ? portraitSceneShellStyle : {}),
+        opacity,
+      }}
+    >
       {scene.kind === "cover" ? <CoverSceneView scene={scene} /> : null}
       {scene.kind === "list" ? <ListSceneView scene={scene} /> : null}
       {scene.kind === "stat" ? <StatSceneView scene={scene} /> : null}
@@ -492,7 +550,8 @@ export const SceneRenderer = ({
 
 export const CaptionPill = ({caption}: {caption: Caption}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
+  const portrait = height > width;
   const start = frameFromSeconds(caption.start, fps);
   const end = frameFromSeconds(caption.end, fps);
 
@@ -508,8 +567,11 @@ export const CaptionPill = ({caption}: {caption: Caption}) => {
     <div
       style={{
         ...captionStyle,
+        ...(portrait ? portraitCaptionStyle : {}),
         opacity: visible,
-        transform: `translate(-50%, ${(1 - visible) * 18}px) scale(${0.98 + visible * 0.02})`,
+        transform: portrait
+          ? `translate(-50%, calc(-50% + ${(1 - visible) * 18}px)) scale(${0.98 + visible * 0.02})`
+          : `translate(-50%, ${(1 - visible) * 18}px) scale(${0.98 + visible * 0.02})`,
       }}
     >
       <RichText parts={caption.parts} defaultColor={colors.ink} />
@@ -518,8 +580,11 @@ export const CaptionPill = ({caption}: {caption: Caption}) => {
 };
 
 export const CaptionLayer = ({captions}: {captions: Caption[]}) => {
+  const {width, height} = useVideoConfig();
+  const portrait = height > width;
   return (
-    <AbsoluteFill style={captionLayerStyle}>
+    <AbsoluteFill style={{...captionLayerStyle, ...(portrait ? portraitCaptionLayerStyle : {})}}>
+      {portrait ? <div style={captionBandStyle} /> : null}
       {captions.map((caption, index) => (
         <CaptionPill key={`${caption.start}-${index}`} caption={caption} />
       ))}
@@ -535,32 +600,67 @@ export const TopBar = ({
   durationSeconds: number;
 }) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, width, height} = useVideoConfig();
+  const portrait = height > width;
   const time = frame / fps;
-  const progressWidth = 16 + progress(frame, 0, durationSeconds * fps) * 84;
+  const timelineProgress = clamp(frame / (durationSeconds * fps), 0, 1);
+  const progressWidth = timelineProgress * 100;
 
   return (
-    <div style={topbarStyle}>
+    <div style={{...topbarStyle, ...(portrait ? portraitTopbarStyle : {})}}>
       <div style={{...navFillStyle, width: `${progressWidth}%`}} />
-      <div style={chapterRowStyle}>
-        {chapters.map((chapter, index) => {
-          const reached = time >= chapter.start;
-          return (
-            <span key={chapter.label} style={chapterGroupStyle}>
-              <span
+      {portrait ? (
+        <div style={portraitChapterRowStyle}>
+          {chapters.map((chapter, index) => {
+            const nextStart = chapters[index + 1]?.start ?? durationSeconds;
+            const reached = time >= chapter.start;
+            const active = time >= chapter.start && time < nextStart;
+            return (
+              <div
+                key={chapter.label}
                 style={{
-                  ...chapterLabelStyle,
-                  color: reached ? colors.ink : colors.topbarMuted,
-                  fontWeight: reached ? 600 : 500,
+                  ...portraitChapterSegmentStyle,
+                  flex: `${Math.max(1, nextStart - chapter.start)} 1 0`,
+                  borderRight:
+                    index < chapters.length - 1
+                      ? `1px solid ${colors.topbarSeparator}`
+                      : "none",
                 }}
               >
-                {chapter.label}
+                <span
+                  style={{
+                    ...portraitChapterLabelStyle,
+                    color: reached ? colors.ink : colors.topbarMuted,
+                    fontWeight: active ? 700 : reached ? 600 : 500,
+                  }}
+                >
+                  {chapter.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div style={chapterRowStyle}>
+          {chapters.map((chapter, index) => {
+            const reached = time >= chapter.start;
+            return (
+              <span key={chapter.label} style={chapterGroupStyle}>
+                <span
+                  style={{
+                    ...chapterLabelStyle,
+                    color: reached ? colors.ink : colors.topbarMuted,
+                    fontWeight: reached ? 600 : 500,
+                  }}
+                >
+                  {chapter.label}
+                </span>
+                {index < chapters.length - 1 ? <span style={chapterSepStyle}>|</span> : null}
               </span>
-              {index < chapters.length - 1 ? <span style={chapterSepStyle}>|</span> : null}
-            </span>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
@@ -569,6 +669,9 @@ export const TopBar = ({
 
 const sceneShellStyle: CSSProperties = {
   padding: `${layout.safeTop}px ${layout.safeX}px ${layout.safeBottom}px`,
+};
+const portraitSceneShellStyle: CSSProperties = {
+  padding: "164px 84px 400px",
 };
 
 const sceneContentStyle: CSSProperties = {
@@ -608,6 +711,12 @@ const coverTitleStyle: CSSProperties = {
   lineHeight: 1.14,
   letterSpacing: 0,
 };
+const portraitCoverTitleStyle: CSSProperties = {
+  ...coverTitleStyle,
+  maxWidth: 900,
+  fontSize: 96,
+  lineHeight: 1.12,
+};
 const subtitleStyle: CSSProperties = {
   marginTop: 46,
   color: colors.muted,
@@ -615,10 +724,18 @@ const subtitleStyle: CSSProperties = {
   fontWeight: 300,
   letterSpacing: 0,
 };
+const portraitSubtitleStyle: CSSProperties = {
+  ...subtitleStyle,
+  maxWidth: 760,
+  fontSize: 32,
+  lineHeight: 1.35,
+};
 
 // List
 const splitLayoutStyle: CSSProperties = {flexDirection: "row", alignItems: "center", gap: 100};
+const portraitListLayoutStyle: CSSProperties = {flexDirection: "column", alignItems: "stretch", gap: 54};
 const sectionTitleRailStyle: CSSProperties = {width: 420, flex: "none"};
+const portraitSectionTitleRailStyle: CSSProperties = {width: "100%", flex: "none"};
 const smallRuleStyle: CSSProperties = {
   width: 48,
   height: 2,
@@ -641,6 +758,11 @@ const sectionHeadingStyle: CSSProperties = {
   fontWeight: 800,
   lineHeight: 1.08,
   letterSpacing: 0,
+};
+const portraitSectionHeadingStyle: CSSProperties = {
+  ...sectionHeadingStyle,
+  fontSize: 72,
+  lineHeight: 1.12,
 };
 const rowsStyle: CSSProperties = {flex: 1, display: "flex", flexDirection: "column"};
 const rowStyle: CSSProperties = {
@@ -672,10 +794,17 @@ const rowValueStyle: CSSProperties = {
   fontWeight: 600,
   lineHeight: 1.2,
 };
+const portraitRowValueStyle: CSSProperties = {
+  ...rowValueStyle,
+  fontSize: 44,
+  lineHeight: 1.18,
+};
 
 // Stat
 const statLayoutStyle: CSSProperties = {flexDirection: "row", alignItems: "center", gap: 110};
+const portraitStatLayoutStyle: CSSProperties = {flexDirection: "column", alignItems: "stretch", gap: 58};
 const bigStatStyle: CSSProperties = {flex: "none"};
+const portraitBigStatStyle: CSSProperties = {flex: "none", alignItems: "center"};
 const statNumberWrapStyle: CSSProperties = {display: "flex", alignItems: "flex-start"};
 const statNumberStyle: CSSProperties = {
   color: colors.ink,
@@ -685,12 +814,21 @@ const statNumberStyle: CSSProperties = {
   lineHeight: 0.82,
   letterSpacing: 0,
 };
+const portraitStatNumberStyle: CSSProperties = {
+  ...statNumberStyle,
+  fontSize: 300,
+};
 const statUnitStyle: CSSProperties = {
   marginTop: 54,
   color: colors.muted,
   fontFamily: fonts.mono,
   fontSize: 72,
   fontWeight: 500,
+};
+const portraitStatUnitStyle: CSSProperties = {
+  ...statUnitStyle,
+  marginTop: 38,
+  fontSize: 52,
 };
 const statRuleStyle: CSSProperties = {
   display: "block",
@@ -704,11 +842,22 @@ const statDetailStyle: CSSProperties = {
   borderLeft: `1px solid ${colors.line}`,
   padding: "18px 0 18px 88px",
 };
+const portraitStatDetailStyle: CSSProperties = {
+  flex: "none",
+  width: "100%",
+  borderTop: `1px solid ${colors.line}`,
+  padding: "46px 0 0",
+};
 const detailTitleStyle: CSSProperties = {
   color: colors.ink,
   fontSize: 54,
   fontWeight: 700,
   lineHeight: 1.28,
+};
+const portraitDetailTitleStyle: CSSProperties = {
+  ...detailTitleStyle,
+  fontSize: 46,
+  lineHeight: 1.22,
 };
 const miniStatsStyle: CSSProperties = {maxWidth: 540, marginTop: 48};
 const miniRowStyle: CSSProperties = {
@@ -722,15 +871,17 @@ const miniRowStyle: CSSProperties = {
 };
 
 // Compare
-const compareGridStyle: CSSProperties = {
+const compareGridStyle = (portrait: boolean): CSSProperties => ({
   flex: 1,
   display: "grid",
-  gridTemplateColumns: "1fr 1px 1fr",
+  gridTemplateColumns: portrait ? "1fr" : "1fr 1px 1fr",
+  gridTemplateRows: portrait ? "1fr 1px 1fr" : undefined,
   alignItems: "stretch",
   marginTop: 60,
-};
-const choiceStyle = (index: number): CSSProperties => ({
-  gridColumn: index === 0 ? 1 : 3,
+});
+const choiceStyle = (index: number, portrait: boolean): CSSProperties => ({
+  gridColumn: portrait ? 1 : index === 0 ? 1 : 3,
+  gridRow: portrait ? (index === 0 ? 1 : 3) : undefined,
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
@@ -755,9 +906,24 @@ const choiceSubtitleStyle: CSSProperties = {
   fontWeight: 300,
   letterSpacing: 0,
 };
+const portraitChoiceTitleStyle: CSSProperties = {
+  fontSize: 62,
+  lineHeight: 1.12,
+};
+const portraitChoiceSubtitleStyle: CSSProperties = {
+  fontSize: 32,
+  lineHeight: 1.3,
+};
 const dividerStyle: CSSProperties = {
   gridColumn: 2,
   width: 1,
+  backgroundColor: colors.lineStrong,
+};
+const portraitDividerStyle: CSSProperties = {
+  gridColumn: 1,
+  gridRow: 2,
+  width: "100%",
+  height: 1,
   backgroundColor: colors.lineStrong,
 };
 
@@ -782,6 +948,15 @@ const outroSubtitleStyle: CSSProperties = {
   fontWeight: 300,
   letterSpacing: 0,
 };
+const portraitOutroTitleStyle: CSSProperties = {
+  fontSize: 104,
+  lineHeight: 1.08,
+};
+const portraitOutroSubtitleStyle: CSSProperties = {
+  fontSize: 32,
+  lineHeight: 1.35,
+  maxWidth: 760,
+};
 
 // Article-image（核心新增）
 const articleImageLayoutStyle: CSSProperties = {
@@ -805,6 +980,12 @@ const articleImageTitleStyle: CSSProperties = {
   fontWeight: 800,
   lineHeight: 1.2,
   letterSpacing: 0,
+};
+const portraitArticleImageTitleStyle: CSSProperties = {
+  ...articleImageTitleStyle,
+  maxWidth: 880,
+  fontSize: 52,
+  lineHeight: 1.22,
 };
 const articleImageFrameStyle: CSSProperties = {
   position: "relative",
@@ -848,6 +1029,16 @@ const articleImageCaptionStyle: CSSProperties = {
 
 // Caption
 const captionLayerStyle: CSSProperties = {zIndex: 100, pointerEvents: "none"};
+const portraitCaptionLayerStyle: CSSProperties = {
+  top: "75%",
+  height: "25%",
+};
+const captionBandStyle: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  backgroundColor: "rgba(249,250,246,0.94)",
+  borderTop: `2px solid ${colors.ink}`,
+};
 const captionStyle: CSSProperties = {
   position: "absolute",
   left: "50%",
@@ -859,6 +1050,15 @@ const captionStyle: CSSProperties = {
   lineHeight: 1.25,
   textAlign: "center",
   letterSpacing: 0,
+};
+const portraitCaptionStyle: CSSProperties = {
+  top: "50%",
+  bottom: "auto",
+  width: "calc(100% - 120px)",
+  maxWidth: 880,
+  fontSize: 44,
+  fontWeight: 700,
+  lineHeight: 1.28,
 };
 
 // TopBar
@@ -872,12 +1072,15 @@ const topbarStyle: CSSProperties = {
   backgroundColor: colors.topbar,
   overflow: "hidden",
 };
+const portraitTopbarStyle: CSSProperties = {
+  height: 92,
+};
 const navFillStyle: CSSProperties = {
   position: "absolute",
   top: 7,
   bottom: 7,
   left: 0,
-  backgroundColor: colors.white,
+  backgroundColor: colors.signal,
   borderRadius: "0 14px 14px 0",
 };
 const chapterRowStyle: CSSProperties = {
@@ -903,4 +1106,26 @@ const chapterLabelStyle: CSSProperties = {
 };
 const chapterSepStyle: CSSProperties = {
   color: colors.topbarSeparator,
+};
+const portraitChapterRowStyle: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  display: "flex",
+  alignItems: "center",
+  padding: "0 26px",
+  zIndex: 1,
+};
+const portraitChapterSegmentStyle: CSSProperties = {
+  height: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-start",
+  paddingLeft: 14,
+  minWidth: 0,
+};
+const portraitChapterLabelStyle: CSSProperties = {
+  fontSize: 20,
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
 };
