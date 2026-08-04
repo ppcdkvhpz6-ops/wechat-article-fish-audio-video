@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wechat Article Video Design"
+  short_description: "Build mobile-first article videos with synced captions"
+  default_prompt: "Apply the mobile-first WeChat article video design system to this Remotion project."
