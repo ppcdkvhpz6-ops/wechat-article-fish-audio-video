@@ -1,13 +1,14 @@
 import type {CSSProperties} from "react";
-import {AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig} from "remotion";
+import {AbsoluteFill, Audio, Sequence, staticFile, useVideoConfig} from "remotion";
 import {colors, fonts, layout} from "./theme";
-import {frameFromSeconds, progress} from "./shared";
+import {frameFromSeconds} from "./shared";
 import {PremiumGridBackground} from "./background";
 import {
   type ArticleScene,
   type ArticleVideoProps,
   CaptionLayer,
   SceneRenderer,
+  TakeawayLayer,
   TopBar,
 } from "./sceneTypes";
 
@@ -19,12 +20,11 @@ export const ArticleVideo = ({
   voiceAudio,
   chapters,
   scenes,
-  captions,
+  takeaways = [],
   sfxCues = [],
 }: ArticleVideoProps) => {
   const {fps} = useVideoConfig();
   const transitionFrames = Math.round(0.42 * fps);
-  const totalFrames = frameFromSeconds(durationSeconds, fps);
 
   return (
     <AbsoluteFill style={stageStyle}>
@@ -69,24 +69,20 @@ export const ArticleVideo = ({
         );
       })}
       <TopBar chapters={chapters} durationSeconds={durationSeconds} />
-      <CaptionLayer captions={captions} />
-      <BrandMark totalFrames={totalFrames} fps={fps} />
+      <TakeawayLayer takeaways={takeaways} />
+      <CaptionLayer captions={[]} />
+      <BrandMark />
     </AbsoluteFill>
   );
 };
 
 // === 底部右下角品牌小标（轻量、不抢戏） ==================
 
-const BrandMark = ({totalFrames, fps}: {totalFrames: number; fps: number}) => {
-  const frame = useCurrentFrame();
-  const enter = progress(frame, totalFrames * 0.7, 0.5 * fps);
-  if (enter <= 0) {
-    return null;
-  }
+const BrandMark = () => {
   return (
-    <div style={{...brandMarkStyle, opacity: enter}}>
+    <div style={brandMarkStyle}>
       <span style={brandRuleStyle} />
-      <span>公众号文章视频</span>
+      <span>小余学长 · vibeconsulting</span>
     </div>
   );
 };
@@ -101,17 +97,16 @@ const stageStyle: CSSProperties = {
 const brandMarkStyle: CSSProperties = {
   position: "absolute",
   right: 36,
-  top: 100,
+  top: 122,
   zIndex: 80,
   display: "flex",
   alignItems: "center",
   gap: 12,
   color: colors.muted,
   fontFamily: fonts.mono,
-  fontSize: 14,
-  fontWeight: 500,
-  letterSpacing: 1.2,
-  textTransform: "uppercase",
+  fontSize: 16,
+  fontWeight: 600,
+  letterSpacing: 0,
 };
 
 const brandRuleStyle: CSSProperties = {

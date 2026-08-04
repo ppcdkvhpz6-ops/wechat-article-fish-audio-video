@@ -8,6 +8,7 @@
     "studio": "remotion studio src/index.ts",
     "typecheck": "tsc --noEmit",
     "tts:fish": "python3 scripts/fish_tts.py --text-file work/source/voice-script.txt --output public/assets/audio/voice.mp3",
+    "tts:fish:segments": "python3 scripts/fish_tts_segments.py --text-file work/source/voice-script.txt --output public/assets/audio/voice.mp3 --timing work/source/segment-timing-measured.json",
     "still": "remotion still src/index.ts ArticleVideo renders/frame-030.png --frame=30 --scale=0.25",
     "render:preview": "remotion render src/index.ts ArticleVideo renders/preview-low.mp4 --scale=0.5 --crf=28 --concurrency=2 --overwrite",
     "render": "remotion render src/index.ts ArticleVideo renders/demo.mp4"

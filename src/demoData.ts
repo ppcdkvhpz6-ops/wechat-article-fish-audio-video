@@ -1,16 +1,16 @@
 import type {ArticleScene, ArticleVideoProps} from "./ArticleVideo";
 
 // The narration is the timing source. Each paragraph owns one page and one caption.
-const sourceAudioDuration = 351.006937;
+const sourceAudioDuration = 342.776;
 // Source-audio seconds. Root.tsx converts these to final 1.25x playback seconds.
 const paragraphRanges = [
-  [0.000, 6.014], [6.014, 12.530], [12.530, 35.752], [35.752, 48.449],
-  [48.449, 54.965], [54.965, 65.824], [65.824, 85.538], [85.538, 106.254],
-  [106.254, 116.278], [116.278, 127.973], [127.973, 139.166], [139.166, 155.372],
-  [155.372, 162.723], [162.723, 183.773], [183.773, 186.446], [186.446, 197.473],
-  [197.473, 213.010], [213.010, 236.566], [236.566, 246.757], [246.757, 265.803],
-  [265.803, 283.846], [283.846, 294.538], [294.538, 314.085], [314.085, 328.453],
-  [328.453, 335.804], [335.804, 342.821], [342.821, 351.007],
+  [0.000, 6.530], [6.530, 13.244], [13.244, 35.683], [35.683, 47.490],
+  [47.490, 53.394], [53.394, 64.130], [64.130, 83.800], [83.800, 104.097],
+  [104.097, 113.501], [113.501, 125.831], [125.831, 137.377], [137.377, 153.939],
+  [153.939, 160.652], [160.652, 181.628], [181.628, 184.893], [184.893, 195.133],
+  [195.133, 209.396], [209.396, 233.768], [233.768, 243.015], [243.015, 261.641],
+  [261.641, 279.221], [279.221, 289.409], [289.409, 308.112], [308.112, 321.696],
+  [321.696, 328.644], [328.644, 335.201], [335.201, 342.776],
 ] as const;
 const paragraphStarts = paragraphRanges.map(([start]) => start);
 const paragraphEnds = paragraphRanges.map(([, end]) => end);
@@ -27,9 +27,8 @@ const pageHeadings = [
   "迭代焕新：让熟悉的产品适应新需求",
   "升级扩容：把产品放进新场景",
   "孵化培育：寻找下一代明星产品",
-  "案例：把家庭清洁变得更轻松",
-  "案例：重新设计纸巾的空间使用",
-  "案例：把养生饮品变成便携选择",
+  "案例：三个产品进入新场景",
+  "案例的共同点",
   "创新从用户痛点开始",
   "AI 让创新逻辑进一步提速",
   "AI 可以提前识别消费信号",
@@ -45,6 +44,27 @@ const pageHeadings = [
   "释放已经拥有的明星产品价值",
 ];
 
+const pageEyebrows = [
+  "开篇判断", "贝恩观点", "新品创新", "市场验证", "明星产品", "品牌资产",
+  "创新误区", "增长路径", "迭代焕新", "升级扩容", "孵化培育", "案例观察",
+  "空间创新", "用户痛点", "AI 机会", "需求识别", "人机协同", "协同工作流",
+  "消费趋势", "品牌价值", "快速响应", "长期主义", "持续经营", "基本盘",
+  "真实需求", "资源聚焦", "结论",
+];
+
+const pageSupport = [
+  "核心判断", "观点来源", "投入规模 · 成功率", "首年渗透率", "明星产品",
+  "品牌认知 · 使用习惯 · 信任", "教育消费者 · 重建渠道 · 承担成本",
+  "市场验证 · 渠道理解 · 快速反馈", "配方 · 口感 · 健康属性 · 使用体验",
+  "即时零售 · 新兴渠道 · 家庭场景", "品牌资产 · 消费者理解 · 主业延展",
+  "滴露 · 心相印 · 元气森林", "减少痛点 · 拓宽场景 · 进入生活",
+  "消费者在哪个时刻还不够满意", "AI 提升探索速度", "信号 → 方案 → 内容",
+  "AI 数据洞察 × 人的价值判断", "AI 找信号 · 人做判断 · 共同交付",
+  "功能价值 · 情感价值", "流量触达 · 品牌复购", "供应链 · 营销 · 分销",
+  "确认需求 · 长期使用 · 心智占据", "观察使用 · 理解复购 · 修正价值",
+  "品牌基本盘", "真实需求优先", "资源集中到核心产品", "价值持续释放",
+];
+
 const paragraphCaptions = [
   "不要靠盲目上新填补业绩缺口，而是用创新重新激活爆款单品。",
   "这是贝恩公司对消费品创新的一条核心判断。",
@@ -57,14 +77,13 @@ const paragraphCaptions = [
   "第一条路径，是在原有产品上改进配方、口感和使用体验。",
   "第二条路径，是把成熟单品放进新的场景和渠道。",
   "第三条路径，是在已有品牌资产上孵化下一代明星产品。",
-  "滴露消毒喷雾，把耗时的家庭清洁变成更轻松的日常动作。",
-  "悬挂式抽纸重新设计了纸巾与生活空间的关系。",
-  "红豆薏米水把传统养生饮品变成了便携的即饮场景。",
-  "这些产品减少了用户痛点，也拓宽了原有产品的使用场景。",
+  "文章中的案例很有代表性：滴露、悬挂式抽纸和红豆薏米水，都把熟悉产品放进了新的生活场景。",
+  "这些产品的共同点，不是增加一个新名字，而是减少用户痛点，拓宽原有产品的使用场景。",
+  "产品创新的起点，不是我们还能生产什么，而是消费者在哪个时刻还不够满意。",
   "AI 会让这套创新逻辑进一步提速。",
-  "它可以从碎片化消费信号中提前识别用户需求。",
-  "AI 擅长数据洞察，人类擅长创意塑造和价值判断。",
-  "先让 AI 找到信号，再由人判断它是否是真需求。",
+  "AI 可以从碎片化消费信号中提前识别需求，并参与方案与内容迭代。",
+  "AI 擅长数据洞察，人类擅长创意塑造、价值判断和理解真实生活。",
+  "先让 AI 找到信号，再由人判断它是否是真需求，AI 提速，人决定最终价值。",
   "消费者不再只看品牌讲了什么，而会判断功能是否兑现。",
   "流量带来第一次看到，品牌资产带来主动搜索和持续购买。",
   "企业需要打通供应链、营销和渠道，建立更快的响应能力。",
@@ -80,13 +99,13 @@ const toneCaption = (text: string) => [{text, tone: "accent" as const}];
 const makeListScene = (index: number): ArticleScene => ({
   kind: "list",
   start: paragraphStarts[index],
-  eyebrow: `分幕 ${String(index + 1).padStart(2, "0")}`,
+  eyebrow: pageEyebrows[index],
   heading: pageHeadings[index],
   items: [
     {
       index: String(index + 1).padStart(2, "0"),
-      label: "本段重点",
-      value: paragraphCaptions[index],
+      label: "关键线索",
+      value: pageSupport[index] ?? pageHeadings[index],
       tone: "accent",
       appearAt: 0.25,
     },
@@ -118,29 +137,124 @@ const makeScene = (index: number): ArticleScene => {
       ],
     };
   }
-  if (index === 4 || index === 11 || index === 12 || index === 13) {
+  if (index === 3) {
+    return {
+      kind: "stat",
+      start,
+      eyebrow: pageEyebrows[index],
+      number: "3.9%",
+      unit: "首年渗透率",
+      title: [{text: pageHeadings[index]}],
+      metrics: [
+        {label: "2024 年上市新品", value: "达到 1% 的比例", tone: "accent", appearAt: 0.25},
+        {label: "市场含义", value: "更多新品掩盖增长放缓", tone: "muted", appearAt: 0.55},
+      ],
+    };
+  }
+  if (index === 1) {
     return {
       kind: "article-image",
       start,
       eyebrow: pageHeadings[index],
-      imageSrc: index === 4 ? "assets/article-images/star-product/01.png" : "assets/article-images/star-product/02.png",
-      imageAspect: index === 4 ? 2 : 0.499,
+      imageSrc: "assets/article-images/star-product/01.png",
+      imageAspect: 2,
       title: toneCaption(pageHeadings[index]),
-      caption: paragraphCaptions[index],
+      insights: [
+        {label: "创新对象", value: "明星产品"},
+        {label: "核心资产", value: "认知 · 信任"},
+        {label: "增长方向", value: "重新激活"},
+      ],
       appearAt: 0.1,
       titleAppearAt: 0.24,
       captionAppearAt: 0.56,
     };
   }
-  if (index === 14 || index === 15 || index === 16 || index === 17) {
+  if (index === 11) {
+    return {
+      kind: "case-grid",
+      start,
+      eyebrow: pageEyebrows[index],
+      heading: pageHeadings[index],
+      cases: [
+        {
+          label: "滴露消毒喷雾",
+          title: "家庭清洁",
+          detail: "把耗时动作变成随手完成的日常",
+          visual: "喷雾",
+          imageSrc: "assets/case-images/dettol-spray.jpg",
+          color: "#2F80ED",
+        },
+        {
+          label: "心相印悬挂式抽纸",
+          title: "墙面取纸",
+          detail: "把纸巾从桌面搬到更顺手的位置",
+          visual: "抽纸",
+          imageSrc: "assets/case-images/tissue-box.jpg",
+          color: "#E76F51",
+        },
+        {
+          label: "元气森林红豆薏米水",
+          title: "便携即饮",
+          detail: "把传统养生饮品放进移动生活",
+          visual: "饮品",
+          imageSrc: "assets/case-images/drink-bottle.jpg",
+          color: "#4C956C",
+        },
+      ],
+    };
+  }
+  if (index === 12 || index === 13) {
+    return makeListScene(index);
+  }
+  if (index === 14) {
+    return {
+      kind: "stat",
+      start,
+      eyebrow: pageEyebrows[index],
+      number: "AI",
+      unit: "创新提速",
+      title: [{text: pageHeadings[index]}],
+      metrics: [
+        {label: "消费信号", value: "更早识别", tone: "accent", appearAt: 0.25},
+        {label: "产品方案", value: "更快迭代", tone: "accent", appearAt: 0.55},
+      ],
+    };
+  }
+  if (index === 15) {
+    return {
+      kind: "list",
+      start,
+      eyebrow: pageEyebrows[index],
+      heading: pageHeadings[index],
+      items: [
+        {index: "信号", label: "AI 先做什么", value: "从碎片化消费信号中提前识别需求", tone: "accent", appearAt: 0.25},
+        {index: "方案", label: "继续参与", value: "配方、包装和产品方案迭代", tone: "accent", appearAt: 0.55},
+        {index: "内容", label: "最后输出", value: "根据渠道和场景生成更精准的内容", tone: "accent", appearAt: 0.85},
+      ],
+    };
+  }
+  if (index === 16) {
     return {
       kind: "compare",
       start,
       eyebrow: pageHeadings[index],
-      heading: index === 14 ? "从用户痛点开始创新" : "让 AI 和人的判断形成协同",
+      heading: "让 AI 和人的判断形成协同",
       choices: [
         {code: "AI", title: "数据洞察", subtitle: "捕捉信号·迭代方案", tone: "accent", appearAt: 0.3},
         {code: "人", title: "价值判断", subtitle: "理解生活·做出选择", tone: "muted", appearAt: 0.65},
+      ],
+    };
+  }
+  if (index === 17) {
+    return {
+      kind: "list",
+      start,
+      eyebrow: pageEyebrows[index],
+      heading: pageHeadings[index],
+      items: [
+        {index: "01", label: "AI 找信号", value: "从评论、搜索和购买行为中发现重复需求", tone: "accent", appearAt: 0.25},
+        {index: "02", label: "人做判断", value: "判断是否是真需求，是否符合品牌气质", tone: "accent", appearAt: 0.55},
+        {index: "03", label: "共同交付", value: "AI 提升探索速度，人决定最终价值", tone: "accent", appearAt: 0.85},
       ],
     };
   }
@@ -169,6 +283,11 @@ export const demoProject: ArticleVideoProps = {
     {label: "结论", start: paragraphStarts[22]},
   ],
   scenes: paragraphStarts.map((_, index) => makeScene(index)),
+  takeaways: paragraphCaptions.map((text, index) => ({
+    start: paragraphStarts[index],
+    end: paragraphEnds[index],
+    text,
+  })),
   captions: paragraphCaptions.map((text, index) => ({
     start: paragraphStarts[index],
     end: paragraphEnds[index],

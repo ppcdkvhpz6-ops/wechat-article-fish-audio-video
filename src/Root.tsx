@@ -21,6 +21,11 @@ const scaledProject: ArticleVideoProps = {
     start: scaleSeconds(caption.start),
     end: scaleSeconds(caption.end),
   })),
+  takeaways: demoProject.takeaways?.map((takeaway) => ({
+    ...takeaway,
+    start: scaleSeconds(takeaway.start),
+    end: scaleSeconds(takeaway.end),
+  })),
   sfxCues: demoProject.sfxCues?.map((cue) => ({
     ...cue,
     start: scaleSeconds(cue.start),
