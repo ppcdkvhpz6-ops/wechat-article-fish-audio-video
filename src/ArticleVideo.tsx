@@ -20,6 +20,7 @@ export const ArticleVideo = ({
   voiceAudio,
   chapters,
   scenes,
+  captions,
   takeaways = [],
   sfxCues = [],
 }: ArticleVideoProps) => {
@@ -70,7 +71,7 @@ export const ArticleVideo = ({
       })}
       <TopBar chapters={chapters} durationSeconds={durationSeconds} />
       <TakeawayLayer takeaways={takeaways} />
-      <CaptionLayer captions={[]} />
+      <CaptionLayer captions={captions} />
       <BrandMark />
     </AbsoluteFill>
   );

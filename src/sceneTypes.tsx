@@ -2,6 +2,7 @@ import type {CSSProperties, ReactNode} from "react";
 import {AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig} from "remotion";
 import {colors, fonts, layout} from "./theme";
 import {clamp, frameFromSeconds, progress} from "./shared";
+import {resolveFigmaTemplate, type FigmaTemplateId, type FigmaTemplateRole} from "./figmaTemplateRegistry";
 
 // === 数据模型 ============================================
 
@@ -42,6 +43,8 @@ export type SfxCue = {
 type CoverScene = {
   kind: "cover";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   titleLines: RichTextPart[][];
   subtitle: string;
@@ -50,6 +53,8 @@ type CoverScene = {
 type ListScene = {
   kind: "list";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   heading: string;
   items: Array<{
@@ -65,6 +70,8 @@ type ListScene = {
 type CaseGridScene = {
   kind: "case-grid";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   heading: string;
   cases: Array<{
@@ -80,6 +87,8 @@ type CaseGridScene = {
 type StatScene = {
   kind: "stat";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   number: string;
   unit: string;
@@ -96,6 +105,8 @@ type StatScene = {
 type CompareScene = {
   kind: "compare";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   heading: string;
   choices: Array<{
@@ -111,6 +122,8 @@ type CompareScene = {
 type OutroScene = {
   kind: "outro";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   title: string;
   subtitle: string;
@@ -121,6 +134,8 @@ type OutroScene = {
 type ArticleImageScene = {
   kind: "article-image";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   /** 公众号原文图，相对 staticFile() 路径 */
   imageSrc: string;
@@ -603,6 +618,7 @@ export const SceneRenderer = ({
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const portrait = height > width;
+  const template = resolveFigmaTemplate(scene.template);
   // Start slightly before frame zero so the opening frame is never blank.
   const enter = progress(frame, -0.12 * fps, 0.42 * fps);
   const exit = isLast ? 0 : progress(frame, durationInFrames - 0.42 * fps, 0.42 * fps);
@@ -610,6 +626,8 @@ export const SceneRenderer = ({
 
   return (
     <AbsoluteFill
+      data-figma-template={template.id}
+      data-figma-style={template.styleFamily}
       style={{
         ...sceneShellStyle,
         ...(portrait ? portraitSceneShellStyle : {}),
