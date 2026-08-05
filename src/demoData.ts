@@ -1,5 +1,5 @@
 import type {ArticleScene, ArticleVideoProps} from "./ArticleVideo";
-import {templateForSceneIndex} from "./figmaTemplateRegistry";
+import {templateForScene} from "./figmaTemplateRegistry";
 
 // The narration is the timing source. Each paragraph owns one page and one caption.
 const sourceAudioDuration = 342.776;
@@ -225,6 +225,7 @@ const makeScene = (index: number): ArticleScene => {
     return {
       kind: "list",
       start,
+      templateRole: "process",
       eyebrow: pageEyebrows[index],
       heading: pageHeadings[index],
       items: [
@@ -250,6 +251,7 @@ const makeScene = (index: number): ArticleScene => {
     return {
       kind: "list",
       start,
+      templateRole: "process",
       eyebrow: pageEyebrows[index],
       heading: pageHeadings[index],
       items: [
@@ -283,10 +285,13 @@ export const demoProject: ArticleVideoProps = {
     {label: "AI机会", start: paragraphStarts[14]},
     {label: "结论", start: paragraphStarts[22]},
   ],
-  scenes: paragraphStarts.map((_, index) => ({
-    ...makeScene(index),
-    template: templateForSceneIndex(index),
-  })),
+  scenes: paragraphStarts.map((_, index) => {
+    const scene = makeScene(index);
+    return {
+      ...scene,
+      template: templateForScene(scene),
+    };
+  }),
   takeaways: paragraphCaptions.map((text, index) => ({
     start: paragraphStarts[index],
     end: paragraphEnds[index],
