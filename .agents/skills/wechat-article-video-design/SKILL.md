@@ -107,6 +107,14 @@ The runtime bridge lives in src/figmaTemplateRegistry.ts. Each scene may carry a
 
 This is a deliberate snapshot sync, not a live Figma API call during rendering. Remotion must remain renderable in CI and offline. When a Figma template changes, update the registry node ID or style mapping, then review the corresponding runtime renderer and run the normal verification workflow. Do not copy Figma placeholder copy into narration or captions without a content pass.
 
+## Upgrade Rules
+
+Template selection is semantic, not page-index based. Use templateRole values such as key-figure, three-bullets, process, kpi, sources, two-by-two, and closing. src/figmaTemplateRegistry.ts maps these roles to the reusable Figma nodes.
+
+Runtime design tokens live in src/figmaDesignTokens.ts and are consumed by src/theme.ts. Keep the 3:4 Figma canvas at 900x1200 and the runtime canvas at 1080x1440; preserve the Navigator, Takeaway, and bottom letter-reserve zones.
+
+When generating a new article, classify each paragraph by semantic intent first, then create its scene. Do not assign templates by array index. Keep audio timing as the source of truth, pass timed captions into CaptionLayer, and use templateRole only for visual routing. Figma remains a snapshot design source: node IDs and token mappings must be reviewed when the Figma file changes.
+
 ## Chapter Navigator
 
 - Keep all chapter labels visible in a segmented top navigator, aligned to the left within each segment.
