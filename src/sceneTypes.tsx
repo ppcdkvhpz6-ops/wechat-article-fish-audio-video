@@ -2,7 +2,7 @@ import type {CSSProperties, ReactNode} from "react";
 import {AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig} from "remotion";
 import {colors, fonts, layout} from "./theme";
 import {clamp, frameFromSeconds, progress} from "./shared";
-import {resolveFigmaTemplate, type FigmaTemplateId} from "./figmaTemplateRegistry";
+import {resolveFigmaTemplate, type FigmaTemplateId, type FigmaTemplateRole} from "./figmaTemplateRegistry";
 
 // === 数据模型 ============================================
 
@@ -44,6 +44,7 @@ type CoverScene = {
   kind: "cover";
   start: number;
   template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   titleLines: RichTextPart[][];
   subtitle: string;
@@ -53,6 +54,7 @@ type ListScene = {
   kind: "list";
   start: number;
   template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   heading: string;
   items: Array<{
@@ -69,6 +71,7 @@ type CaseGridScene = {
   kind: "case-grid";
   start: number;
   template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   heading: string;
   cases: Array<{
@@ -85,6 +88,7 @@ type StatScene = {
   kind: "stat";
   start: number;
   template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   number: string;
   unit: string;
@@ -102,6 +106,7 @@ type CompareScene = {
   kind: "compare";
   start: number;
   template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   heading: string;
   choices: Array<{
@@ -118,6 +123,7 @@ type OutroScene = {
   kind: "outro";
   start: number;
   template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   title: string;
   subtitle: string;
@@ -129,6 +135,7 @@ type ArticleImageScene = {
   kind: "article-image";
   start: number;
   template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   /** 公众号原文图，相对 staticFile() 路径 */
   imageSrc: string;
