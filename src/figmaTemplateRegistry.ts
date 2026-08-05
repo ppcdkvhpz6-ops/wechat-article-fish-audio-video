@@ -1,5 +1,19 @@
 export type FigmaStyleFamily = "warm-editorial" | "swiss-signal";
 
+export type FigmaTemplateRole =
+  | "chapter-opener"
+  | "single-image"
+  | "before-after"
+  | "closing"
+  | "key-figure"
+  | "three-bullets"
+  | "quote-waveform"
+  | "kpi"
+  | "process"
+  | "sources"
+  | "checklist"
+  | "two-by-two";
+
 export type FigmaTemplateId =
   | "warm-chapter-opener"
   | "warm-single-image"
@@ -63,18 +77,38 @@ export const FIGMA_TEMPLATES: Record<FigmaTemplateId, FigmaTemplateDefinition> =
   "swiss-two-by-two": template("swiss-two-by-two", "中文 Swiss / 2×2 矩阵", "swiss-signal", "11:176", ["15:11"], ["compare"]),
 };
 
-const INDEX_TEMPLATE_MAP: Record<number, FigmaTemplateId> = {
-  0: "warm-chapter-opener", 1: "warm-single-image", 2: "swiss-kpi", 3: "swiss-kpi",
-  4: "warm-key-figure", 5: "warm-key-figure", 6: "swiss-checklist", 7: "swiss-process",
-  8: "warm-three-bullets", 9: "warm-three-bullets", 10: "warm-three-bullets",
-  11: "swiss-sources", 12: "swiss-checklist", 13: "warm-before-after", 14: "swiss-kpi",
-  15: "swiss-process", 16: "swiss-two-by-two", 17: "swiss-process", 18: "swiss-sources",
-  19: "swiss-sources", 20: "swiss-process", 21: "swiss-process", 22: "swiss-checklist",
-  23: "warm-key-figure", 24: "warm-single-image", 25: "warm-key-figure", 26: "warm-closing",
+export type SceneTemplateHint = {
+  kind: "cover" | "list" | "case-grid" | "stat" | "compare" | "outro" | "article-image";
+  templateRole?: FigmaTemplateRole;
 };
 
-export const templateForSceneIndex = (index: number): FigmaTemplateId =>
-  INDEX_TEMPLATE_MAP[index] ?? "swiss-checklist";
+const ROLE_TEMPLATE_MAP: Record<FigmaTemplateRole, FigmaTemplateId> = {
+  "chapter-opener": "warm-chapter-opener",
+  "single-image": "warm-single-image",
+  "before-after": "warm-before-after",
+  closing: "warm-closing",
+  "key-figure": "warm-key-figure",
+  "three-bullets": "warm-three-bullets",
+  "quote-waveform": "warm-quote-waveform",
+  kpi: "swiss-kpi",
+  process: "swiss-process",
+  sources: "swiss-sources",
+  checklist: "swiss-checklist",
+  "two-by-two": "swiss-two-by-two",
+};
+
+const DEFAULT_ROLE_BY_KIND: Record<SceneTemplateHint["kind"], FigmaTemplateRole> = {
+  cover: "chapter-opener",
+  list: "checklist",
+  "case-grid": "sources",
+  stat: "kpi",
+  compare: "two-by-two",
+  outro: "closing",
+  "article-image": "single-image",
+};
+
+export const templateForScene = (scene: SceneTemplateHint): FigmaTemplateId =>
+  ROLE_TEMPLATE_MAP[scene.templateRole ?? DEFAULT_ROLE_BY_KIND[scene.kind]];
 
 export const resolveFigmaTemplate = (
   id: FigmaTemplateId | undefined,
