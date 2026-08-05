@@ -1,4 +1,5 @@
 import {staticFile} from "remotion";
+import {figmaTokens} from "./figmaDesignTokens";
 
 const fontFiles = [
   {family: "Noto Sans SC", file: "assets/fonts/NotoSansSC-300.ttf", weight: "300"},
@@ -28,39 +29,39 @@ if (typeof document !== "undefined" && !document.getElementById("studio-font-fac
 }
 
 export const colors = {
-  canvas: "#f7f7f7",
-  ink: "#1a1a1a",
-  muted: "#627284",
-  weak: "#a6a6a6",
-  line: "rgba(49,58,69,0.10)",
-  lineStrong: "rgba(49,58,69,0.18)",
-  accent: "#1772f6",
-  topbar: "#202024",
-  topbarTrack: "#ffffff",
-  topbarMuted: "rgba(49,58,69,0.48)",
-  topbarSeparator: "#d9d9d9",
-  gridLine: "rgba(44,58,78,0.30)",
-  gridLineStrong: "rgba(47,111,255,0.26)",
-  gridWarm: "rgba(235,178,82,0.24)",
-  glass: "rgba(255,255,255,0.74)",
-  white: "#ffffff",
+  canvas: figmaTokens.canvas,
+  ink: figmaTokens.ink,
+  muted: figmaTokens.muted,
+  weak: figmaTokens.weak,
+  line: figmaTokens.line,
+  lineStrong: figmaTokens.lineStrong,
+  accent: figmaTokens.accent,
+  topbar: figmaTokens.topbar,
+  topbarTrack: figmaTokens.topbarTrack,
+  topbarMuted: figmaTokens.topbarMuted,
+  topbarSeparator: figmaTokens.topbarSeparator,
+  gridLine: figmaTokens.gridLine,
+  gridLineStrong: figmaTokens.gridLineStrong,
+  gridWarm: figmaTokens.gridWarm,
+  glass: figmaTokens.glass,
+  white: figmaTokens.white,
 };
 
 export const fonts = {
-  sans: '"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif',
-  mono: '"Space Grotesk", "SFMono-Regular", "Menlo", "Consolas", monospace',
+  sans: figmaTokens.fontSans,
+  mono: figmaTokens.fontMono,
 };
 
 export const layout = {
-  width: 1080,
-  height: 1440,
+  width: figmaTokens.canvasWidth,
+  height: figmaTokens.canvasHeight,
   fps: 30,
   voicePlaybackRate: 1.25,
   backgroundVariant: "paper" as "grid" | "paper" | "blueprint",
-  topbarHeight: 68,
+  topbarHeight: figmaTokens.topbarHeight,
   // 没 PIP，bottom 可以压得更低，主舞台让给图片
-  safeTop: 196,
-  safeX: 120,
-  safeBottom: 180,
-  captionBottom: 88,
+  safeTop: figmaTokens.safeTop,
+  safeX: figmaTokens.safeX,
+  safeBottom: figmaTokens.safeBottom,
+  captionBottom: figmaTokens.captionBottom,
 };

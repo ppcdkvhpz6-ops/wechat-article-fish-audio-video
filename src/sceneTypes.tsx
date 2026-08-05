@@ -1,11 +1,13 @@
-import type {CSSProperties, ReactNode} from "react";
+import {Fragment, type CSSProperties, type ReactNode} from "react";
 import {AbsoluteFill, Img, staticFile, useCurrentFrame, useVideoConfig} from "remotion";
 import {colors, fonts, layout} from "./theme";
 import {clamp, frameFromSeconds, progress} from "./shared";
+import {resolveFigmaTemplate, type FigmaTemplateId, type FigmaTemplateRole} from "./figmaTemplateRegistry";
 
 // === 数据模型 ============================================
 
 export type Tone = "accent" | "white" | "muted";
+export type VisualMode = "three-box" | "table" | "process" | "key-figure" | "image-evidence" | "compare" | "closing";
 
 export type RichTextPart = {
   text: string;
@@ -42,14 +44,20 @@ export type SfxCue = {
 type CoverScene = {
   kind: "cover";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   titleLines: RichTextPart[][];
   subtitle: string;
+  imageSrc?: string;
+  imageRole?: "generated-concept";
 };
 
 type ListScene = {
   kind: "list";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   heading: string;
   items: Array<{
@@ -60,11 +68,15 @@ type ListScene = {
     /** 进场时刻（场景内相对秒数），来自口播说到该行内容的字幕起点 */
     appearAt?: number;
   }>;
+  visualCards?: Array<{keyword: string; detail: string; imageSrc?: string}>;
+  visualMode?: VisualMode;
 };
 
 type CaseGridScene = {
   kind: "case-grid";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   heading: string;
   cases: Array<{
@@ -80,6 +92,8 @@ type CaseGridScene = {
 type StatScene = {
   kind: "stat";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   number: string;
   unit: string;
@@ -96,12 +110,15 @@ type StatScene = {
 type CompareScene = {
   kind: "compare";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   heading: string;
   choices: Array<{
     code: string;
     title: string;
     subtitle: string;
+    imageSrc?: string;
     tone?: Tone;
     /** 进场时刻（场景内相对秒数），来自口播说到该选项的字幕起点 */
     appearAt?: number;
@@ -111,6 +128,8 @@ type CompareScene = {
 type OutroScene = {
   kind: "outro";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   title: string;
   subtitle: string;
@@ -121,9 +140,15 @@ type OutroScene = {
 type ArticleImageScene = {
   kind: "article-image";
   start: number;
+  template?: FigmaTemplateId;
+  templateRole?: FigmaTemplateRole;
   eyebrow: string;
   /** 公众号原文图，相对 staticFile() 路径 */
   imageSrc: string;
+  /** Provenance controls whether the image is treated as source evidence or a generated concept. */
+  imageRole?: "source-screenshot" | "generated-concept";
+  /** Generated cover images use a direct hero treatment instead of the evidence card. */
+  imagePresentation?: "evidence" | "hero";
   /** 图片宽/高，由 PIL 预读，用于决定 max-width 还是 max-height 优先 */
   imageAspect: number;
   title: RichTextPart[];
@@ -591,6 +616,193 @@ const ArticleImageSceneView = ({scene}: {scene: ArticleImageScene}) => {
 
 // === SceneRouter ========================================
 
+const FigmaTemplateSceneView = ({
+  scene,
+  template,
+}: {
+  scene: ArticleScene;
+  template: ReturnType<typeof resolveFigmaTemplate>;
+}) => {
+  const isSwiss = template.styleFamily === "swiss-signal";
+  const templateBackground = {
+    backgroundColor: isSwiss ? "#f7f7f2" : "#f0e8d6",
+  } as CSSProperties;
+  const accent = isSwiss ? "#2448d8" : "#d9361e";
+  return (
+    <AbsoluteFill style={figmaTemplateLayerStyle}>
+      <Img src={staticFile(template.asset!)} style={figmaTemplateImageStyle} />
+      <div style={{...figmaMaskStyle, ...figmaTitleMaskStyle, ...templateBackground}} />
+      <div style={{...figmaMaskStyle, ...figmaReserveMaskStyle, ...templateBackground}} />
+      {scene.kind === "article-image" ? (
+        <>
+          <div style={figmaTemplateTitleStyle}>
+            <RichText parts={scene.title} strong />
+          </div>
+          <div style={figmaImageWindowStyle}>
+            <Img src={staticFile(scene.imageSrc)} style={figmaImageWindowImageStyle} />
+          </div>
+        </>
+      ) : null}
+      {scene.kind === "stat" ? (
+        <>
+          <div style={figmaTemplateTitleStyle}>{scene.title.map((part) => part.text).join("")}</div>
+          <div style={{...figmaStatNumberStyle, color: accent}}>{scene.number}</div>
+          <div style={figmaStatUnitStyle}>{scene.unit}</div>
+        </>
+      ) : null}
+    </AbsoluteFill>
+  );
+};
+
+// Figma roles are resolved here into editable Remotion templates. The Figma
+// frame supplies the visual contract; no exported placeholder layer is painted.
+const SwissTemplateRenderer = ({
+  scene,
+  template,
+}: {
+  scene: ArticleScene;
+  template: ReturnType<typeof resolveFigmaTemplate>;
+}) => {
+  const supported = template.runtimeSceneKinds.includes(scene.kind);
+  if (!supported) return null;
+  return <FigmaSwissTemplate scene={scene} />;
+};
+
+type FigmaScene = Extract<ArticleScene, {kind: "cover" | "list" | "stat" | "compare" | "outro" | "article-image" | "case-grid"}>;
+
+const FigmaSwissTemplate = ({scene}: {scene: FigmaScene}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const reveal = enterStyle(frame, fps, 0.04, 0.38, 18);
+
+  return (
+    <AbsoluteFill style={figmaRuntimeFrameStyle}>
+      {scene.kind === "cover" ? (
+        scene.imageSrc ? (
+          <AbsoluteFill style={figmaFullCoverStyle}>
+            <Img src={staticFile(scene.imageSrc)} style={figmaFullCoverImageStyle} />
+            <div style={{...figmaFullCoverTitleStyle, ...(scene.imageSrc ? {opacity: 1, transform: "none"} : reveal)}}>
+              {scene.titleLines.map((line, index) => <div key={index}><RichText parts={line} strong defaultColor={colors.white} /></div>)}
+            </div>
+          </AbsoluteFill>
+        ) : (
+          <div style={figmaCoverLayoutStyle}>
+            <FigmaEyebrow text={scene.eyebrow} />
+            <div style={{...figmaCoverTitleStyle, ...reveal}}>
+              {scene.titleLines.map((line, index) => <div key={index}><RichText parts={line} strong /></div>)}
+            </div>
+            <div style={figmaCoverSubtitleStyle}>{scene.subtitle}</div>
+          </div>
+        )
+      ) : null}
+      {scene.kind === "outro" ? (
+        <div style={figmaCoverLayoutStyle}>
+          <FigmaEyebrow text={scene.eyebrow} />
+          <div style={{...figmaCoverTitleStyle, ...reveal, whiteSpace: "pre-line"}}>{scene.title}</div>
+          <div style={figmaCoverSubtitleStyle}>{scene.subtitle}</div>
+        </div>
+      ) : null}
+      {scene.kind === "stat" ? <FigmaStatTemplate scene={scene} reveal={reveal} /> : null}
+      {scene.kind === "article-image" ? <FigmaImageTemplate scene={scene} reveal={reveal} /> : null}
+      {scene.kind === "list" ? <FigmaListTemplate scene={scene} reveal={reveal} /> : null}
+      {scene.kind === "compare" ? <FigmaCompareTemplate scene={scene} reveal={reveal} /> : null}
+      {scene.kind === "case-grid" ? <CaseGridSceneView scene={scene} /> : null}
+    </AbsoluteFill>
+  );
+};
+
+const FigmaEyebrow = ({text}: {text: string}) => (
+  <div style={figmaEyebrowStyle}><span style={figmaEyebrowRuleStyle} />{text}</div>
+);
+
+const FigmaStatTemplate = ({scene, reveal}: {scene: Extract<ArticleScene, {kind: "stat"}>; reveal: CSSProperties}) => (
+  <div style={figmaTemplateBodyStyle}>
+    <FigmaEyebrow text={scene.eyebrow} />
+    <div style={{...figmaTemplateHeadingStyle, ...reveal}}><RichText parts={scene.title} strong /></div>
+    <div style={{...figmaMetricValueStyle, ...reveal}}>{scene.number}</div>
+    <div style={figmaMetricUnitStyle}>{scene.unit}</div>
+    <span style={figmaAccentRuleStyle} />
+    <div style={figmaMetricRowsStyle}>
+      {scene.metrics.map((metric) => <div key={metric.label} style={figmaMetricRowStyle}>
+        <span style={figmaMetricLabelStyle}>{metric.label}</span>
+        <span style={figmaMetricDetailStyle}>{metric.value}</span>
+      </div>)}
+    </div>
+  </div>
+);
+
+const FigmaImageTemplate = ({scene, reveal}: {scene: Extract<ArticleScene, {kind: "article-image"}>; reveal: CSSProperties}) => (
+  <div style={figmaTemplateBodyStyle}>
+    <FigmaEyebrow text={scene.eyebrow} />
+    <div style={{...figmaTemplateHeadingStyle, ...reveal}}><RichText parts={scene.title} strong /></div>
+    <div style={scene.imagePresentation === "hero" ? figmaHeroImageSurfaceStyle : figmaImageSurfaceStyle}>
+      <Img src={staticFile(scene.imageSrc)} style={scene.imagePresentation === "hero" ? figmaHeroImageStyle : figmaRuntimeImageStyle} />
+    </div>
+    {scene.imagePresentation !== "hero" && scene.insights?.length ? <div style={figmaInsightRowStyle}>
+      {scene.insights.map((insight) => <div key={insight.label} style={figmaInsightStyle}>
+        <span>{insight.label}</span><strong>{insight.value}</strong>
+      </div>)}
+    </div> : null}
+  </div>
+);
+
+const FigmaListTemplate = ({scene, reveal}: {scene: Extract<ArticleScene, {kind: "list"}>; reveal: CSSProperties}) => (
+  <div style={figmaTemplateBodyStyle}>
+    <FigmaEyebrow text={scene.eyebrow} />
+    <div style={{...figmaTemplateHeadingStyle, ...reveal}}>{scene.heading}</div>
+    {scene.visualMode === "table" ? <FigmaTableVisual scene={scene} /> : null}
+    {scene.visualMode === "process" ? <FigmaProcessVisual scene={scene} /> : null}
+    {!scene.visualMode || scene.visualMode === "three-box" ? <div style={figmaThreeCardGridStyle}>
+      {(scene.visualCards ?? scene.items.slice(0, 3).map((item) => ({keyword: item.value, detail: item.label, imageSrc: undefined}))).slice(0, 3).map((card, index) => (
+        <div key={`${card.keyword}-${index}`} style={figmaThreeCardStyle}>
+          {card.imageSrc ? <Img src={staticFile(card.imageSrc)} style={figmaCardInlineImageStyle} /> : null}
+          <span style={figmaThreeCardIndexStyle}>•</span>
+          <strong style={figmaThreeCardKeywordStyle}>{card.keyword}</strong>
+          <span style={figmaThreeCardDetailStyle}>{card.detail}</span>
+        </div>
+      ))}
+    </div> : null}
+  </div>
+);
+
+const FigmaTableVisual = ({scene}: {scene: Extract<ArticleScene, {kind: "list"}>}) => (
+  <div style={figmaTableStyle}>
+    <div style={figmaTableHeaderStyle}><span>维度</span><span>文章里的判断</span></div>
+    {(scene.visualCards ?? []).slice(0, 4).map((card) => (
+      <div key={card.keyword} style={figmaTableRowStyle}><strong>{card.keyword}</strong><span>{card.detail}</span></div>
+    ))}
+  </div>
+);
+
+const FigmaProcessVisual = ({scene}: {scene: Extract<ArticleScene, {kind: "list"}>}) => (
+  <div style={figmaProcessStyle}>
+    {(scene.visualCards ?? []).slice(0, 4).map((card, index, cards) => (
+      <Fragment key={card.keyword}>
+        <div style={{...figmaProcessStepStyle, ...figmaProcessStepVariantStyle(index)}}>
+          {card.imageSrc ? <Img src={staticFile(card.imageSrc)} style={{...figmaProcessImageStyle, height: figmaProcessImageHeights[index] ?? 148}} /> : null}
+          <span style={figmaThreeCardIndexStyle}>•</span><strong>{card.keyword}</strong><span>{card.detail}</span>
+        </div>
+        {index < cards.length - 1 ? <span style={figmaProcessArrowStyle}><span style={figmaProcessArrowLineStyle} /></span> : null}
+      </Fragment>
+    ))}
+  </div>
+);
+
+const FigmaCompareTemplate = ({scene, reveal}: {scene: Extract<ArticleScene, {kind: "compare"}>; reveal: CSSProperties}) => (
+  <div style={figmaTemplateBodyStyle}>
+    <FigmaEyebrow text={scene.eyebrow} />
+    <div style={{...figmaTemplateHeadingStyle, ...reveal}}>{scene.heading}</div>
+    <div style={figmaCompareGridStyle}>
+      {scene.choices.map((choice) => <div key={choice.code} style={figmaCompareCardStyle}>
+        {choice.imageSrc ? <Img src={staticFile(choice.imageSrc)} style={figmaCompareCardImageStyle} /> : null}
+        <span style={figmaCardLabelStyle}>{choice.code}</span>
+        <strong style={figmaCardValueStyle}>{choice.title}</strong>
+        <span style={figmaCompareSubtitleStyle}>{choice.subtitle}</span>
+      </div>)}
+    </div>
+  </div>
+);
+
 export const SceneRenderer = ({
   scene,
   durationInFrames,
@@ -603,6 +815,7 @@ export const SceneRenderer = ({
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const portrait = height > width;
+  const template = resolveFigmaTemplate(scene.template);
   // Start slightly before frame zero so the opening frame is never blank.
   const enter = progress(frame, -0.12 * fps, 0.42 * fps);
   const exit = isLast ? 0 : progress(frame, durationInFrames - 0.42 * fps, 0.42 * fps);
@@ -610,19 +823,15 @@ export const SceneRenderer = ({
 
   return (
     <AbsoluteFill
+      data-figma-template={template.id}
+      data-figma-style={template.styleFamily}
       style={{
         ...sceneShellStyle,
         ...(portrait ? portraitSceneShellStyle : {}),
         opacity,
       }}
     >
-      {scene.kind === "cover" ? <CoverSceneView scene={scene} /> : null}
-      {scene.kind === "list" ? <ListSceneView scene={scene} /> : null}
-      {scene.kind === "case-grid" ? <CaseGridSceneView scene={scene} /> : null}
-      {scene.kind === "stat" ? <StatSceneView scene={scene} /> : null}
-      {scene.kind === "compare" ? <CompareSceneView scene={scene} /> : null}
-      {scene.kind === "outro" ? <OutroSceneView scene={scene} /> : null}
-      {scene.kind === "article-image" ? <ArticleImageSceneView scene={scene} /> : null}
+      <SwissTemplateRenderer scene={scene} template={template} />
     </AbsoluteFill>
   );
 };
@@ -660,12 +869,12 @@ export const CaptionPill = ({caption}: {caption: Caption}) => {
   );
 };
 
-export const CaptionLayer = ({captions}: {captions: Caption[]}) => {
+export const CaptionLayer = ({captions, showBand = true}: {captions: Caption[]; showBand?: boolean}) => {
   const {width, height} = useVideoConfig();
   const portrait = height > width;
   return (
     <AbsoluteFill style={{...captionLayerStyle, ...(portrait ? portraitCaptionLayerStyle : {})}}>
-      {portrait ? <div style={captionBandStyle} /> : null}
+      {portrait && showBand ? <div style={captionBandStyle} /> : null}
       {captions.map((caption, index) => (
         <CaptionPill key={`${caption.start}-${index}`} caption={caption} />
       ))}
@@ -1045,7 +1254,12 @@ const statLayoutStyle: CSSProperties = {flexDirection: "row", alignItems: "cente
 const portraitStatLayoutStyle: CSSProperties = {flexDirection: "column", alignItems: "stretch", gap: 58};
 const bigStatStyle: CSSProperties = {flex: "none"};
 const portraitBigStatStyle: CSSProperties = {flex: "none", alignItems: "center"};
-const statNumberWrapStyle: CSSProperties = {display: "flex", alignItems: "flex-start"};
+const statNumberWrapStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "flex-start",
+  flexWrap: "nowrap",
+  whiteSpace: "nowrap",
+};
 const statNumberStyle: CSSProperties = {
   color: colors.ink,
   fontFamily: fonts.mono,
@@ -1056,7 +1270,8 @@ const statNumberStyle: CSSProperties = {
 };
 const portraitStatNumberStyle: CSSProperties = {
   ...statNumberStyle,
-  fontSize: 300,
+  fontSize: 264,
+  whiteSpace: "nowrap",
 };
 const statUnitStyle: CSSProperties = {
   marginTop: 54,
@@ -1064,11 +1279,13 @@ const statUnitStyle: CSSProperties = {
   fontFamily: fonts.mono,
   fontSize: 72,
   fontWeight: 500,
+  whiteSpace: "nowrap",
 };
 const portraitStatUnitStyle: CSSProperties = {
   ...statUnitStyle,
   marginTop: 38,
-  fontSize: 52,
+  fontSize: 42,
+  whiteSpace: "nowrap",
 };
 const statRuleStyle: CSSProperties = {
   display: "block",
@@ -1301,6 +1518,108 @@ const articleImageCaptionStyle: CSSProperties = {
 
 // Caption
 const captionLayerStyle: CSSProperties = {zIndex: 100, pointerEvents: "none"};
+const figmaTemplateLayerStyle: CSSProperties = {position: "absolute", inset: 0, zIndex: 0};
+const figmaTemplateImageStyle: CSSProperties = {width: "100%", height: "100%", objectFit: "fill"};
+const figmaRuntimeFrameStyle: CSSProperties = {
+  position: "absolute", inset: 0, zIndex: 1, color: colors.ink,
+};
+const figmaRuntimeFramePadding = "154px 84px 480px";
+const figmaTemplateBodyStyle: CSSProperties = {
+  position: "absolute", inset: figmaRuntimeFramePadding, display: "flex", flexDirection: "column",
+};
+const figmaEyebrowStyle: CSSProperties = {
+  display: "flex", alignItems: "center", gap: 16, color: colors.accent,
+  fontFamily: fonts.mono, fontSize: 20, fontWeight: 700, marginBottom: 22,
+};
+const figmaEyebrowRuleStyle: CSSProperties = {width: 48, height: 3, backgroundColor: colors.accent, display: "inline-block"};
+const figmaTemplateHeadingStyle: CSSProperties = {
+  maxWidth: 880, color: colors.ink, fontSize: 68, fontWeight: 900, lineHeight: 1.12, marginBottom: 38,
+};
+const figmaCoverLayoutStyle: CSSProperties = {...figmaTemplateBodyStyle, justifyContent: "center"};
+const figmaFullCoverStyle: CSSProperties = {position: "absolute", inset: 0, overflow: "hidden"};
+const figmaFullCoverImageStyle: CSSProperties = {width: "100%", height: "100%", objectFit: "cover"};
+const figmaFullCoverTitleStyle: CSSProperties = {
+  position: "absolute", top: 168, left: 78, right: 78, color: colors.white,
+  fontSize: 88, fontWeight: 900, lineHeight: 1.08, textShadow: "0 3px 18px rgba(0,0,0,0.85)",
+};
+const figmaCoverTitleStyle: CSSProperties = {
+  maxWidth: 880, color: colors.ink, fontSize: 92, fontWeight: 900, lineHeight: 1.08,
+};
+const figmaCoverSubtitleStyle: CSSProperties = {marginTop: 30, color: colors.muted, fontSize: 30, lineHeight: 1.35, maxWidth: 760};
+const figmaMetricValueStyle: CSSProperties = {
+  color: colors.ink, fontFamily: fonts.mono, fontSize: 250, fontWeight: 700, lineHeight: 0.88,
+  whiteSpace: "nowrap", marginTop: 18,
+};
+const figmaMetricUnitStyle: CSSProperties = {color: colors.muted, fontFamily: fonts.mono, fontSize: 40, fontWeight: 600, marginTop: 18, whiteSpace: "nowrap"};
+const figmaAccentRuleStyle: CSSProperties = {width: 380, height: 3, backgroundColor: colors.accent, marginTop: 18, marginBottom: 22};
+const figmaMetricRowsStyle: CSSProperties = {width: "100%", maxWidth: 880, borderTop: `1px solid ${colors.lineStrong}`};
+const figmaMetricRowStyle: CSSProperties = {display: "flex", justifyContent: "space-between", gap: 24, padding: "18px 0", borderBottom: `1px solid ${colors.line}`};
+const figmaMetricLabelStyle: CSSProperties = {color: colors.muted, fontSize: 24, fontWeight: 500};
+const figmaMetricDetailStyle: CSSProperties = {color: colors.accent, fontSize: 26, fontWeight: 700, textAlign: "right"};
+const figmaImageSurfaceStyle: CSSProperties = {
+  width: "100%", height: 360, display: "flex", alignItems: "center", justifyContent: "center",
+  backgroundColor: colors.white, border: `1px solid ${colors.lineStrong}`, borderRadius: 10, overflow: "hidden",
+};
+const figmaRuntimeImageStyle: CSSProperties = {width: "100%", height: "100%", objectFit: "contain"};
+const figmaHeroImageSurfaceStyle: CSSProperties = {
+  width: "100%", height: 620, display: "flex", alignItems: "center", justifyContent: "center",
+  backgroundColor: colors.canvas, overflow: "hidden",
+};
+const figmaHeroImageStyle: CSSProperties = {width: "100%", height: "100%", objectFit: "cover"};
+const figmaInsightRowStyle: CSSProperties = {display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginTop: 18};
+const figmaInsightStyle: CSSProperties = {display: "flex", flexDirection: "column", gap: 6, padding: "14px 16px", borderTop: `3px solid ${colors.accent}`, backgroundColor: colors.white};
+const figmaCardGridStyle: CSSProperties = {display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 18, marginTop: 18};
+const figmaCardStyle: CSSProperties = {minHeight: 180, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 24, backgroundColor: colors.white, border: `1px solid ${colors.lineStrong}`, borderTop: `4px solid ${colors.accent}`};
+const figmaCardLabelStyle: CSSProperties = {color: colors.muted, fontSize: 20, fontWeight: 600};
+const figmaCardValueStyle: CSSProperties = {color: colors.ink, fontSize: 34, fontWeight: 800, lineHeight: 1.2};
+const figmaSignalPanelStyle: CSSProperties = {marginTop: 18, minHeight: 330, padding: "28px 26px", backgroundColor: colors.white, border: `1px solid ${colors.lineStrong}`, borderTop: `4px solid ${colors.accent}`};
+const figmaSignalGroupStyle: CSSProperties = {display: "flex", flexDirection: "column", gap: 18};
+const figmaSignalRowStyle: CSSProperties = {display: "flex", alignItems: "stretch", gap: 14, width: "100%"};
+const figmaSignalNodeStyle: CSSProperties = {flex: 1, minHeight: 180, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 18, border: `1px solid ${colors.lineStrong}`, borderTopWidth: 3, backgroundColor: colors.canvas};
+const figmaSignalNodeIndexStyle: CSSProperties = {color: colors.accent, fontFamily: fonts.mono, fontSize: 18, fontWeight: 700};
+const figmaSignalConnectorStyle: CSSProperties = {alignSelf: "center", color: colors.accent, fontFamily: fonts.mono, fontSize: 24, fontWeight: 700};
+const figmaSignalDividerStyle: CSSProperties = {height: 1, backgroundColor: colors.line, margin: "22px 0"};
+const figmaThreeCardGridStyle: CSSProperties = {display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 16, marginTop: 22};
+const figmaThreeCardStyle: CSSProperties = {minHeight: 250, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 22, backgroundColor: colors.white, border: `1px solid ${colors.lineStrong}`, borderTop: `4px solid ${colors.accent}`};
+const figmaCardInlineImageStyle: CSSProperties = {width: "100%", height: 92, objectFit: "cover", border: `1px solid ${colors.line}`, display: "block", marginBottom: 8};
+const figmaThreeCardIndexStyle: CSSProperties = {color: colors.accent, fontFamily: fonts.mono, fontSize: 18, fontWeight: 700};
+const figmaThreeCardKeywordStyle: CSSProperties = {color: colors.ink, fontSize: 30, fontWeight: 800, lineHeight: 1.2};
+const figmaThreeCardDetailStyle: CSSProperties = {color: colors.muted, fontSize: 21, lineHeight: 1.35};
+const figmaTableStyle: CSSProperties = {marginTop: 22, border: `1px solid ${colors.lineStrong}`, backgroundColor: colors.white};
+const figmaTableHeaderStyle: CSSProperties = {display: "grid", gridTemplateColumns: "0.8fr 1.8fr", gap: 20, padding: "16px 22px", color: colors.accent, fontSize: 19, fontWeight: 700, borderBottom: `2px solid ${colors.accent}`};
+const figmaTableRowStyle: CSSProperties = {display: "grid", gridTemplateColumns: "0.8fr 1.8fr", gap: 20, padding: "22px", color: colors.muted, fontSize: 22, lineHeight: 1.3, borderBottom: `1px solid ${colors.line}`};
+const figmaProcessStyle: CSSProperties = {display: "flex", alignItems: "stretch", gap: 18, marginTop: 26};
+const figmaProcessStepStyle: CSSProperties = {flex: 1, minHeight: 330, display: "flex", flexDirection: "column", gap: 10, padding: "0 10px 18px", backgroundColor: "transparent", border: "none", borderTop: `3px solid ${colors.accent}`, color: colors.muted, fontSize: 20, lineHeight: 1.3};
+const figmaProcessStepVariantStyle = (index: number): CSSProperties => ({marginTop: index === 1 ? 22 : index === 2 ? 8 : 0});
+const figmaProcessImageHeights = [164, 132, 150];
+const figmaProcessImageStyle: CSSProperties = {width: "100%", objectFit: "cover", border: "none", display: "block", marginBottom: 8};
+const figmaProcessArrowStyle: CSSProperties = {width: 24, display: "flex", alignItems: "center", justifyContent: "center", alignSelf: "center"};
+const figmaProcessArrowLineStyle: CSSProperties = {width: "100%", height: 1, backgroundColor: colors.accent, display: "block", position: "relative"};
+const figmaCompareGridStyle: CSSProperties = {display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 18, marginTop: 18};
+const figmaCompareCardStyle: CSSProperties = {minHeight: 390, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 12, padding: 20, backgroundColor: colors.white, border: `1px solid ${colors.lineStrong}`};
+const figmaCompareCardImageStyle: CSSProperties = {width: "100%", height: 150, objectFit: "cover", border: `1px solid ${colors.line}`, display: "block"};
+const figmaCompareSubtitleStyle: CSSProperties = {color: colors.muted, fontSize: 22, lineHeight: 1.3};
+const figmaMaskStyle: CSSProperties = {position: "absolute", left: "5%", right: "5%"};
+const figmaTitleMaskStyle: CSSProperties = {top: "13%", height: "30%"};
+const figmaReserveMaskStyle: CSSProperties = {top: "84%", height: "16%", left: 0, right: 0, backgroundColor: "#ffffff"};
+const figmaTemplateTitleStyle: CSSProperties = {
+  position: "absolute", top: "16%", left: "8%", right: "8%", color: "#111111",
+  fontSize: 70, fontWeight: 800, lineHeight: 1.1, zIndex: 2,
+};
+const figmaImageWindowStyle: CSSProperties = {
+  position: "absolute", top: "42%", left: "8%", width: "84%", height: "25%",
+  display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2,
+  backgroundColor: "#ffffff", border: "1px solid rgba(49,58,69,0.18)", borderRadius: 12,
+};
+const figmaImageWindowImageStyle: CSSProperties = {width: "100%", height: "100%", objectFit: "contain"};
+const figmaStatNumberStyle: CSSProperties = {
+  position: "absolute", top: "43%", left: "8%", color: "#d9361e", fontSize: 138,
+  fontWeight: 900, lineHeight: 0.9, zIndex: 2,
+};
+const figmaStatUnitStyle: CSSProperties = {
+  position: "absolute", top: "58%", left: "8%", color: "#111111", fontSize: 30,
+  fontWeight: 700, zIndex: 2,
+};
 const portraitCaptionLayerStyle: CSSProperties = {
   top: "83%",
   height: "17%",

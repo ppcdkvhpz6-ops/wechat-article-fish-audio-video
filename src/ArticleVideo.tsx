@@ -1,5 +1,5 @@
 import type {CSSProperties} from "react";
-import {AbsoluteFill, Audio, Sequence, staticFile, useVideoConfig} from "remotion";
+import {AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig} from "remotion";
 import {colors, fonts, layout} from "./theme";
 import {frameFromSeconds} from "./shared";
 import {PremiumGridBackground} from "./background";
@@ -20,10 +20,12 @@ export const ArticleVideo = ({
   voiceAudio,
   chapters,
   scenes,
+  captions,
   takeaways = [],
   sfxCues = [],
 }: ArticleVideoProps) => {
   const {fps} = useVideoConfig();
+  const frame = useCurrentFrame();
   const transitionFrames = Math.round(0.42 * fps);
 
   return (
@@ -52,7 +54,9 @@ export const ArticleVideo = ({
         const sceneStart = frameFromSeconds(scene.start, fps);
         const baseDuration = frameFromSeconds(nextStart - scene.start, fps);
         const isLast = index === scenes.length - 1;
-        const durationInFrames = Math.max(1, baseDuration + (isLast ? 0 : transitionFrames));
+        // Include the composition's final frame in the last scene. Without the
+        // extra frame, the final still falls just outside the last Sequence.
+        const durationInFrames = Math.max(1, baseDuration + (isLast ? 1 : transitionFrames));
         return (
           <Sequence
             key={`${scene.kind}-${scene.start}`}
@@ -69,8 +73,8 @@ export const ArticleVideo = ({
         );
       })}
       <TopBar chapters={chapters} durationSeconds={durationSeconds} />
-      <TakeawayLayer takeaways={takeaways} />
-      <CaptionLayer captions={[]} />
+      <TakeawayLayer takeaways={takeaways.slice(1)} />
+      <CaptionLayer captions={[]} showBand={frameFromSeconds(scenes[1]?.start ?? 0, fps) <= frame} />
       <BrandMark />
     </AbsoluteFill>
   );

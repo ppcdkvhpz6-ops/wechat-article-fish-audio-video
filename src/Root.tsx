@@ -1,5 +1,5 @@
 import {Composition, Folder} from "remotion";
-import {demoProject} from "./demoData";
+import {sunoProject as demoProject} from "./sunoData";
 import {ArticleVideo, type ArticleVideoProps} from "./ArticleVideo";
 import {layout} from "./theme";
 

@@ -1,0 +1,103 @@
+{
+  "sourceDuration": 103.783,
+  "segments": [
+    {
+      "segment": 1,
+      "text": "最近，一个叫“多巴胺网站”的现象在韩国年轻人中流行起来。它们看起来像购物网站，但支付是虚拟的，发货也是虚拟的。",
+      "sourceStart": 0.0,
+      "sourceEnd": 9.064,
+      "duration": 9.064
+    },
+    {
+      "segment": 2,
+      "text": "其中最有意思的案例，叫 FoodNeverComes，中文可以理解为“食物永远不会来”。它让你完整体验点外卖，却不真的让食物送到家。",
+      "sourceStart": 9.064,
+      "sourceEnd": 17.711,
+      "duration": 8.646
+    },
+    {
+      "segment": 3,
+      "text": "你可以先像普通外卖平台一样浏览菜单，选择店铺和商品，把想吃的东西放进购物车。",
+      "sourceStart": 17.711,
+      "sourceEnd": 23.719,
+      "duration": 6.008
+    },
+    {
+      "segment": 4,
+      "text": "接下来，你可以填写配送地址、选择支付方式，完成一次看起来真实的下单流程。",
+      "sourceStart": 23.719,
+      "sourceEnd": 29.596,
+      "duration": 5.877
+    },
+    {
+      "segment": 5,
+      "text": "订单完成后，页面还会展示一张虚拟配送地图，让你继续等待一份永远不会到达的外卖。",
+      "sourceStart": 29.596,
+      "sourceEnd": 35.918,
+      "duration": 6.322
+    },
+    {
+      "segment": 6,
+      "text": "最后，它不会给你送来食物，而是生成一张订单，告诉你因为没有真的吃到东西，节省了多少卡路里。",
+      "sourceStart": 35.918,
+      "sourceEnd": 43.284,
+      "duration": 7.366
+    },
+    {
+      "segment": 7,
+      "text": "这款应用不需要注册，是作者利用 AI 做出的纯前端演示，却意外获得了很多人的体验和传播。",
+      "sourceStart": 43.284,
+      "sourceEnd": 50.233,
+      "duration": 6.949
+    },
+    {
+      "segment": 8,
+      "text": "它击中的，其实是一个很多人都经历过的时刻：深夜打开外卖 App，并不是真的饿，只是想滑一滑菜单。",
+      "sourceStart": 50.233,
+      "sourceEnd": 56.894,
+      "duration": 6.661
+    },
+    {
+      "segment": 9,
+      "text": "你把炸鸡加进购物车，再删掉，换成烧烤和奶茶，犹豫半天，最后什么也没有点。",
+      "sourceStart": 56.894,
+      "sourceEnd": 63.085,
+      "duration": 6.191
+    },
+    {
+      "segment": 10,
+      "text": "多巴胺管的从来不只是“得到”，而是“想要”。浏览、挑选和下单的每一步，都在刺激大脑，让人获得短暂的快乐。",
+      "sourceStart": 63.085,
+      "sourceEnd": 70.582,
+      "duration": 7.497
+    },
+    {
+      "segment": 11,
+      "text": "等真正的食物送到手里，兴奋感反而可能开始消退。FoodNeverComes 做的事情，就是把逛的过程和买的结果分离开。",
+      "sourceStart": 70.582,
+      "sourceEnd": 78.392,
+      "duration": 7.811
+    },
+    {
+      "segment": 12,
+      "text": "它只保留过程，不让结果变成支付、卡路里和配送的负担。这也给 AI 产品一个启示：不是所有过程都应该被自动化掉。",
+      "sourceStart": 78.392,
+      "sourceEnd": 86.621,
+      "duration": 8.229
+    },
+    {
+      "segment": 13,
+      "text": "重复、乏味、低效、消耗情绪的过程，可以交给 AI 省掉；但有趣、能产生期待、让人获得快乐的过程，应该被保留下来。",
+      "sourceStart": 86.621,
+      "sourceEnd": 94.902,
+      "duration": 8.281
+    },
+    {
+      "segment": 14,
+      "text": "工作可以快一点，生活却不一定要更快。这类多巴胺网站也提醒独立开发者：有时可以把过程提供给用户，让结果不再成为负担。",
+      "sourceStart": 94.902,
+      "sourceEnd": 103.783,
+      "duration": 8.882
+    }
+  ]
+}

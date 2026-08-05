@@ -25,6 +25,19 @@ Estimate duration from the narration text before generating audio. For the defau
 4. Inspect the actual MP3 duration with a media tool. Treat the generated audio, after the configured playback rate, as the source of truth. Derive the final composition duration, chapter starts, scene starts, caption windows, and timed SFX from that measured duration. Do not build or render a video timeline from the pre-TTS estimate alone.
 5. Render and verify the video only after the audio and its timing have been accepted.
 
+This order is mandatory for every new project. A project is not ready to render unless it has: a generated 3:4 cover, an approved fact brief, measured narration timing, and a scene-to-fact mapping. Do not skip the image-generation or fact-extraction gate because the article appears short.
+
+### Fact Brief Gate
+
+Before writing the voice script, extract a fact brief from the source article. For every material claim, record:
+
+- **Actor**: who or which company, team, product, institution, or researcher is involved.
+- **Action**: what they launched, built, changed, measured, acquired, announced, or decided.
+- **Object/context**: what the action concerns and where or when it happened.
+- **Result/evidence**: the concrete outcome, metric, quote, date, price, user count, or other support.
+
+The final narration must contain the key actor-action pairs, not only an abstract interpretation. Every statistic, named entity, and concrete example shown in a visual must map to a source paragraph and a measured audio segment. If the article does not support a detail, omit it or label it as analysis; never invent a company action, number, or causal explanation.
+
 For paragraph-driven videos, split the narration into its actual natural paragraphs after TTS is approved. Give each paragraph one page segment, one scene start/end interval, and one matching caption window. Calculate paragraph intervals from measured audio duration and paragraph character lengths; do not use a small set of manually guessed global timestamps to cover many unrelated paragraphs. Keep captions concise enough for the lower band while preserving the paragraph's meaning.
 
 ### Low-Density Scene Rule
@@ -33,7 +46,41 @@ Before rendering, review every page's upper content region for visual density. A
 
 The visual treatment is part of the workflow: paragraph text -> measured audio segment -> matching visual view -> isolated caption band. Reuse the same page-level visual grammar across scenes, but let the visual content change with the paragraph. Remove decorative numeric badges such as `01/02/03` when they do not carry meaning.
 
+For abstract or low-density paragraphs, choose the visual mode from the content instead of applying one fixed layout:
+
+- `three-box`: three independent concepts or takeaways, one keyword and one short explanation per box.
+- `table`: two or more comparable metrics, attributes, costs, or outcomes.
+- `process`: ordered actions, steps, or a user journey.
+- `key-figure`: one dominant number or a single conclusion.
+- `image-evidence`: a concrete product, interface, screenshot, person, or place named by the narration.
+- `compare`: two opposing forces, before/after states, or process versus result.
+- `closing`: a final judgment or principle.
+
+Use a relationship diagram only when the narration describes an actual sequence or dependency. Do not fill the page with one oversized card or an unrelated generated image. Store the decision as `visualMode` in scene data and route it to the matching Figma-derived Remotion template.
+
+### Batch Visual Audit For Cards
+
+Before export, scan every `list` scene with `three-box` or `process` visual mode card by card. If a card has a concrete concept named by the narration and its upper area would otherwise be mostly blank, generate one matching concept bitmap and attach it to that card through `visualCards[].imageSrc`. Generate images in a batch for the full audit, but keep one prompt and one asset per distinct card concept; do not reuse a generic image across unrelated cards. The generated image must contain no text, numbers, logo, watermark, or invented evidence. Keep the card keyword and detail as editable Remotion text, and keep the lower caption separate. Table and key-figure scenes should use semantic layouts unless an image is specifically needed to explain a named object.
+
+### Designer-Driven Composition
+
+Do not make every card in a row identical. For `process` and `three-box` scenes, establish a shared baseline but vary one or two deliberate properties: image height, crop, vertical offset, card width, or amount of negative space. Use asymmetry to express hierarchy, not decoration: the most important step can be larger, the supporting step can recede, and connectors should be quiet rules or nodes rather than repeated arrow glyphs. Keep one visual family, one accent color, and a stable reading direction. Avoid dashboard-like equal boxes, repeated UI borders, centered icon grids, and generic stock composition. A designer pass must ask: what is the dominant image, where does the eye move next, and which card should be visually quieter?
+
 ### Visual Copy De-duplication
+
+### Image Generation Policy
+
+Every article video must have one article-specific generated cover image. Generate it with the configured `generate_image` MCP before the Remotion render, using a prompt derived from the article argument and the selected Swiss Signal visual system. The generated cover must be a clean bitmap without readable text, page numbers, logos, watermark, fake UI copy, or embedded title; Remotion owns all typography and metadata. Keep generous negative space and a subject that remains legible at 3:4.
+
+The generated cover uses a direct full-frame `3:4` image presentation in the first scene. Do not route it through the source-evidence card or screenshot window, and do not add insight cards underneath it unless the cover genuinely needs one concise fact anchor. Keep one title element over the image; hide the normal lower takeaway band on this opening scene.
+
+For middle scenes, use this priority order:
+
+1. Reuse a relevant screenshot or image captured from the source article when the narration refers to a real product, interface, person, place, or chart.
+2. Use a semantic Figma-derived layout when the narration is abstract but the content can be represented by a comparison, table, process, key figure, or three concise anchors.
+3. Call `generate_image` only when the segment has a concrete visual concept that is missing from the source material and the semantic layout would leave the content region materially empty. Mark the scene `imageRole: "generated-concept"`; keep the prompt free of copy and let Remotion render the matching keywords, figures, and captions separately.
+
+Generated images are supplements, not evidence. Never use one to invent an article fact, replace a source screenshot, or repeat the lower caption. Persist project-bound results under `public/assets/article-images/<article-slug>/`, record the prompt and provenance in the source notes, and inspect each generated bitmap before wiring it into a scene. Source screenshots use `imageRole: "source-screenshot"`.
 
 Before export, compare every visible text element within a page: eyebrow, heading, image annotations, card labels, support text, and caption. The same phrase must not appear twice in the upper visual region, and upper labels must not simply repeat the lower caption. Numeric indexes are layout metadata, not copy; render them as a dot, rule, or omit them. If a repeated phrase is necessary for context, keep it once in the strongest hierarchy position and replace the other instance with a nonverbal marker or a distinct supporting phrase.
 
@@ -77,9 +124,8 @@ Every reusable scene follows this architecture:
 
 Style routing:
 
-- **Warm Editorial**: use for chapter openers, voice, field notes, single-image observations, image-led scenes, and closing / next-step pages. Use warm paper, ink-black type, and brick-red accent.
-- **Swiss Signal**: use for KPI conclusions, comparisons, timelines, process progress, sources / evidence, checklists, and framework pages. Use off-white, black, and one royal-blue accent.
-- Keep one style family consistent across a sequence so the Navigator, Takeaway, caption band, and bottom reserve feel continuous.
+- Choose one style family for the entire project before scene generation. The default is **Swiss Signal**: off-white, black, dark gray, and one royal-blue accent. Do not alternate Warm Editorial and Swiss Signal within one video.
+- Warm Editorial may remain in the Figma library as an optional reference, but it must not be mixed into a Swiss Signal project.
 
 Reusable scene components:
 
@@ -90,14 +136,7 @@ Reusable scene components:
 
 Scene routing:
 
-- Chapter opener -> Warm Editorial
-- Single image observation -> Warm Editorial
-- Before / after -> Warm Editorial for narrative contrast; Swiss Signal for measured comparison
-- KPI conclusion -> Swiss Signal
-- Process progress -> Swiss Signal
-- Sources and evidence -> Swiss Signal
-- Checklist review -> Swiss Signal
-- Closing / Next Step -> Warm Editorial
+- All scene roles -> the selected project style family (default: Swiss Signal)
 
 Chinese variants use Noto Sans SC. Keep all Navigator, Takeaway, image placeholder, and letter-reserve layers editable. The Figma library is a reusable design source; do not turn placeholder text into final narration without a scene-specific content pass.
 
@@ -114,6 +153,10 @@ Template selection is semantic, not page-index based. Use templateRole values su
 Runtime design tokens live in src/figmaDesignTokens.ts and are consumed by src/theme.ts. Keep the 3:4 Figma canvas at 900x1200 and the runtime canvas at 1080x1440; preserve the Navigator, Takeaway, and bottom letter-reserve zones.
 
 When generating a new article, classify each paragraph by semantic intent first, then create its scene. Do not assign templates by array index. Keep audio timing as the source of truth, pass timed captions into CaptionLayer, and use templateRole only for visual routing. Figma remains a snapshot design source: node IDs and token mappings must be reviewed when the Figma file changes.
+
+### Exported Template Assets
+
+When a Figma template is available, inspect or export the actual 900x1200 frame through the authenticated Figma desktop session and store it under `public/assets/figma-templates/` as a design reference. Do not paint a complete exported PNG behind editable runtime content: that leaves placeholder numbers, labels, navigation, and takeaway copy underneath the new layers. Translate the Figma frame into Remotion tokens, geometry, and editable components, then render each visible text and image exactly once. Registry assets are evidence of the source design, not a second UI layer. Verify the first frame, one image-evidence scene, one key-figure scene, a chapter boundary, and the final frame visually.
 
 ## Chapter Navigator
 
