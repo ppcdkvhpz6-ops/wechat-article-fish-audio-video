@@ -101,6 +101,12 @@ Scene routing:
 
 Chinese variants use Noto Sans SC. Keep all Navigator, Takeaway, image placeholder, and letter-reserve layers editable. The Figma library is a reusable design source; do not turn placeholder text into final narration without a scene-specific content pass.
 
+## Runtime Figma Sync
+
+The runtime bridge lives in src/figmaTemplateRegistry.ts. Each scene may carry a template ID, and the registry maps that ID to the Figma file key, node ID, style family, ratio, reusable components, and supported runtime scene kinds. src/demoData.ts assigns a template ID to every demo scene, and SceneRenderer exposes the resolved template as data-figma-template and data-figma-style metadata.
+
+This is a deliberate snapshot sync, not a live Figma API call during rendering. Remotion must remain renderable in CI and offline. When a Figma template changes, update the registry node ID or style mapping, then review the corresponding runtime renderer and run the normal verification workflow. Do not copy Figma placeholder copy into narration or captions without a content pass.
+
 ## Chapter Navigator
 
 - Keep all chapter labels visible in a segmented top navigator, aligned to the left within each segment.
