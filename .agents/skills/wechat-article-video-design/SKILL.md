@@ -64,6 +64,43 @@ Unless the user explicitly asks for attribution, keep source-publication names, 
 - Avoid negative letter spacing. Prefer fewer, larger text elements over dense paragraphs.
 - Check long Chinese titles and metric values at the final 3:4 dimensions; no text may overflow its parent.
 
+## Reusable 3:4 Figma Template System
+
+Use the companion Figma template library for reusable 3:4 scene structures. The Figma source is 900x1200; the Remotion composition remains 1080x1440. Scale the geometry proportionally and preserve the project's runtime safe areas.
+
+Every reusable scene follows this architecture:
+
+1. **Navigator** at the top: a segmented progress bar with all chapter labels visible.
+2. **Main content** in the upper region: key figure, bullets, process, comparison, image evidence, or framework.
+3. **Quote / Takeaway** below the main content when a concise editorial conclusion is useful.
+4. **Letter reserve** at the bottom: keep a quiet blank area for the chapter letter or sequence marker.
+
+Style routing:
+
+- **Warm Editorial**: use for chapter openers, voice, field notes, single-image observations, image-led scenes, and closing / next-step pages. Use warm paper, ink-black type, and brick-red accent.
+- **Swiss Signal**: use for KPI conclusions, comparisons, timelines, process progress, sources / evidence, checklists, and framework pages. Use off-white, black, and one royal-blue accent.
+- Keep one style family consistent across a sequence so the Navigator, Takeaway, caption band, and bottom reserve feel continuous.
+
+Reusable scene components:
+
+- `Navigator / 4-Step` and `Navigator / 6-Step`
+- `Highlight / Takeaway`
+- `Image Placeholder / 3:4`
+- `Key Figure`, `Three Bullet Points`, `Comparison Split`, `Timeline`, `Three Steps`, `2x2 Matrix`, `KPI`, `Sources`, `Checklist`, `Chapter Opener`, `Single Image`, and `Closing`
+
+Scene routing:
+
+- Chapter opener -> Warm Editorial
+- Single image observation -> Warm Editorial
+- Before / after -> Warm Editorial for narrative contrast; Swiss Signal for measured comparison
+- KPI conclusion -> Swiss Signal
+- Process progress -> Swiss Signal
+- Sources and evidence -> Swiss Signal
+- Checklist review -> Swiss Signal
+- Closing / Next Step -> Warm Editorial
+
+Chinese variants use Noto Sans SC. Keep all Navigator, Takeaway, image placeholder, and letter-reserve layers editable. The Figma library is a reusable design source; do not turn placeholder text into final narration without a scene-specific content pass.
+
 ## Chapter Navigator
 
 - Keep all chapter labels visible in a segmented top navigator, aligned to the left within each segment.
